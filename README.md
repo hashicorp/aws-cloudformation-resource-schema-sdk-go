@@ -4,6 +4,13 @@ This package provides [AWS CloudFormation Resource Schema](https://github.com/aw
 
 _NOTE: There is a separate [AWS CloudFormation resource specification](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-resource-specification.html), which is different than what is being described or handled in this package._
 
+To browse the documentation before it is published on https://pkg.go.dev, you can browse it locally via [`godoc`](https://pkg.go.dev/golang.org/x/tools/cmd/godoc):
+
+```shell
+godoc -http=":6060" &
+open "http://localhost:6060/pkg/github.com/hashicorp/aws-cloudformation-resource-schema-sdk-go"
+```
+
 ## Example Usage
 
 Adding Go Module dependency to your project:
