@@ -1,0 +1,1 @@
+# aws-cloudformation-resource-schema-sdk-go
