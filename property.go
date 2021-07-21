@@ -67,3 +67,17 @@ func (p *Property) String() string {
 
 	return string(b)
 }
+
+func (p *Property) IsRequired(name string) bool {
+	if p == nil {
+		return false
+	}
+
+	for _, req := range p.Required {
+		if req == name {
+			return true
+		}
+	}
+
+	return false
+}
