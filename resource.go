@@ -8,7 +8,7 @@ type Resource struct {
 	Definitions                     map[string]*Property   `json:"definitions,omitempty"`
 	DeprecatedProperties            PropertyJsonPointers   `json:"deprecatedProperties,omitempty"`
 	Description                     *string                `json:"description,omitempty"`
-	Handlers                        map[string]*Handler    `json:"handler,omitempty"`
+	Handlers                        map[string]*Handler    `json:"handlers,omitempty"`
 	PrimaryIdentifier               PropertyJsonPointers   `json:"primaryIdentifier,omitempty"`
 	Properties                      map[string]*Property   `json:"properties,omitempty"`
 	ReadOnlyProperties              PropertyJsonPointers   `json:"readOnlyProperties,omitempty"`
