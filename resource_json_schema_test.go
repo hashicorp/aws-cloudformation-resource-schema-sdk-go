@@ -10,15 +10,17 @@ import (
 
 func TestResourceJsonSchemaResource(t *testing.T) {
 	testCases := []struct {
-		TestDescription    string
-		MetaSchemaPath     string
-		ResourceSchemaPath string
-		ExpectError        bool
+		TestDescription     string
+		MetaSchemaPath      string
+		ResourceSchemaPath  string
+		ExpectError         bool
+		ExpectedNumHandlers int
 	}{
 		{
-			TestDescription:    "valid",
-			MetaSchemaPath:     "provider.definition.schema.v1.json",
-			ResourceSchemaPath: "initech.tps.report.v1.json",
+			TestDescription:     "valid",
+			MetaSchemaPath:      "provider.definition.schema.v1.json",
+			ResourceSchemaPath:  "initech.tps.report.v1.json",
+			ExpectedNumHandlers: 5,
 		},
 	}
 
@@ -56,6 +58,10 @@ func TestResourceJsonSchemaResource(t *testing.T) {
 
 			if err == nil && testCase.ExpectError {
 				t.Fatal("expected error, got none")
+			}
+
+			if got := len(resource.Handlers); got != testCase.ExpectedNumHandlers {
+				t.Fatalf("expected %d handlers, got %d", testCase.ExpectedNumHandlers, got)
 			}
 		})
 	}
