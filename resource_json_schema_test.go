@@ -22,6 +22,12 @@ func TestResourceJsonSchemaResource(t *testing.T) {
 			ResourceSchemaPath:  "initech.tps.report.v1.json",
 			ExpectedNumHandlers: 5,
 		},
+		{
+			TestDescription:     "valid with negative-lookahead in pattern",
+			MetaSchemaPath:      "provider.definition.schema.v1.json",
+			ResourceSchemaPath:  "initech.tps.report.negative-lookahead.json",
+			ExpectedNumHandlers: 5,
+		},
 	}
 
 	for _, testCase := range testCases {
