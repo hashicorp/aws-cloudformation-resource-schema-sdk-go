@@ -3,6 +3,7 @@ package cfschema
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/hashicorp/go-multierror"
@@ -62,6 +63,9 @@ func newJsonSchemaDocument(document string) (*jsonSchema, error) {
 	// Go's regular expression engine does not support \Z
 	// Reference: https://github.com/google/re2/wiki/Syntax
 	document = strings.ReplaceAll(document, `\\Z`, `$`)
+
+	// Go's regular expression engine does not support negative lookahead. Remove.
+	document = regexp.MustCompile(`\(\?\!.*\)`).ReplaceAllString(document, "")
 
 	schemaLoader := gojsonschema.NewStringLoader(document)
 
