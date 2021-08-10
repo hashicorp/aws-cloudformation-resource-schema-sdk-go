@@ -1,3 +1,8 @@
+## v0.5.0
+
+Allow property examples to be array of any.
+Remove all attempts to rewrite patterns - It is the responsibility of the caller to deal with any regex syntax mismatches.
+
 ## v0.4.0
 
 Remove any negative lookahead from patterns while loading document.
