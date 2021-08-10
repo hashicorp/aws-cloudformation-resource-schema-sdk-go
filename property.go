@@ -40,7 +40,7 @@ type Property struct {
 	Comment              *string              `json:"$comment,omitempty"`
 	Description          *string              `json:"description,omitempty"`
 	Enum                 []interface{}        `json:"enum,omitempty"`
-	Examples             []string             `json:"examples,omitempty"`
+	Examples             []interface{}        `json:"examples,omitempty"`
 	Format               *string              `json:"format,omitempty"`
 	InsertionOrder       *bool                `json:"insertionOrder,omitempty"`
 	Items                *Property            `json:"items,omitempty"`
