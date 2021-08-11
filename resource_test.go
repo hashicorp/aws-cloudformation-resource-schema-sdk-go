@@ -51,21 +51,15 @@ func TestResourceResolveProperty(t *testing.T) {
 		TestDescription string
 		Resource        *cfschema.Resource
 		Property        *cfschema.Property
-		Expected        bool
+		ExpectError     bool
+		ExpectResolved  bool
 		ExpectRef       bool
 		ExpectType      bool
 	}{
 		{
-			TestDescription: "nil resource",
-			Resource:        nil,
-			Expected:        false,
-			ExpectRef:       false,
-			ExpectType:      false,
-		},
-		{
 			TestDescription: "nil property",
 			Resource:        &cfschema.Resource{},
-			Expected:        false,
+			ExpectResolved:  false,
 			ExpectRef:       false,
 			ExpectType:      false,
 		},
@@ -73,7 +67,7 @@ func TestResourceResolveProperty(t *testing.T) {
 			TestDescription: "passthrough",
 			Resource:        &cfschema.Resource{},
 			Property:        &cfschema.Property{},
-			Expected:        true,
+			ExpectResolved:  false,
 			ExpectRef:       false,
 			ExpectType:      false,
 		},
@@ -83,9 +77,7 @@ func TestResourceResolveProperty(t *testing.T) {
 			Property: &cfschema.Property{
 				Ref: testReference("/definitions/test"),
 			},
-			Expected:   false,
-			ExpectRef:  false,
-			ExpectType: false,
+			ExpectError: true,
 		},
 		{
 			TestDescription: "missing property",
@@ -93,9 +85,7 @@ func TestResourceResolveProperty(t *testing.T) {
 			Property: &cfschema.Property{
 				Ref: testReference("/properties/test"),
 			},
-			Expected:   false,
-			ExpectRef:  false,
-			ExpectType: false,
+			ExpectError: true,
 		},
 		{
 			TestDescription: "definition ref",
@@ -112,9 +102,9 @@ func TestResourceResolveProperty(t *testing.T) {
 			Property: &cfschema.Property{
 				Ref: testReference("/definitions/test"),
 			},
-			Expected:   true,
-			ExpectRef:  true,
-			ExpectType: false,
+			ExpectResolved: true,
+			ExpectRef:      true,
+			ExpectType:     false,
 		},
 		{
 			TestDescription: "definition type",
@@ -128,9 +118,9 @@ func TestResourceResolveProperty(t *testing.T) {
 			Property: &cfschema.Property{
 				Ref: testReference("/definitions/test"),
 			},
-			Expected:   true,
-			ExpectRef:  false,
-			ExpectType: true,
+			ExpectResolved: true,
+			ExpectRef:      false,
+			ExpectType:     true,
 		},
 		{
 			TestDescription: "property ref",
@@ -144,9 +134,9 @@ func TestResourceResolveProperty(t *testing.T) {
 			Property: &cfschema.Property{
 				Ref: testReference("/properties/test"),
 			},
-			Expected:   true,
-			ExpectRef:  false,
-			ExpectType: true,
+			ExpectResolved: true,
+			ExpectRef:      false,
+			ExpectType:     true,
 		},
 	}
 
@@ -154,30 +144,38 @@ func TestResourceResolveProperty(t *testing.T) {
 		testCase := testCase
 
 		t.Run(testCase.TestDescription, func(t *testing.T) {
-			actualProperty := testCase.Resource.ResolveProperty(testCase.Property)
+			resolved, err := testCase.Resource.Resolve(testCase.Property)
 
-			if actualProperty != nil && !testCase.Expected {
-				t.Fatalf("expected no property, got one")
+			if err != nil && !testCase.ExpectError {
+				t.Fatalf("unexpected error: %s", err)
 			}
 
-			if actualProperty == nil && testCase.Expected {
-				t.Fatalf("expected property, got none")
+			if err == nil && testCase.ExpectError {
+				t.Fatal("expected error, got none")
 			}
 
-			if actualProperty != nil {
-				if actualProperty.Ref != nil && !testCase.ExpectRef {
+			if resolved && !testCase.ExpectResolved {
+				t.Fatalf("expected resolution, got one")
+			}
+
+			if !resolved && testCase.ExpectResolved {
+				t.Fatalf("expected resolution, got none")
+			}
+
+			if resolved {
+				if testCase.Property.Ref != nil && !testCase.ExpectRef {
 					t.Fatalf("expected no property ref, got one")
 				}
 
-				if actualProperty.Ref == nil && testCase.ExpectRef {
+				if testCase.Property.Ref == nil && testCase.ExpectRef {
 					t.Fatalf("expected property ref, got none")
 				}
 
-				if actualProperty.Type != nil && !testCase.ExpectType {
+				if testCase.Property.Type != nil && !testCase.ExpectType {
 					t.Fatalf("expected no property type, got one")
 				}
 
-				if actualProperty.Type == nil && testCase.ExpectType {
+				if testCase.Property.Type == nil && testCase.ExpectType {
 					t.Fatalf("expected property type, got none")
 				}
 			}

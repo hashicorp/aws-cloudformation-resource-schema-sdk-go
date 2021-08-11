@@ -10,27 +10,28 @@ func TestReferenceField(t *testing.T) {
 	testCases := []struct {
 		TestDescription string
 		Reference       cfschema.Reference
+		ExpectError     bool
 		Expected        string
 	}{
 		{
 			TestDescription: "empty",
 			Reference:       cfschema.Reference(""),
-			Expected:        "",
+			ExpectError:     true,
 		},
 		{
 			TestDescription: "root",
 			Reference:       cfschema.Reference("/"),
-			Expected:        "",
+			ExpectError:     true,
 		},
 		{
 			TestDescription: "definitions prefix only",
 			Reference:       cfschema.Reference("/definitions"),
-			Expected:        "",
+			ExpectError:     true,
 		},
 		{
 			TestDescription: "properties prefix only",
 			Reference:       cfschema.Reference("/properties"),
-			Expected:        "",
+			ExpectError:     true,
 		},
 		{
 			TestDescription: "definition",
@@ -58,7 +59,17 @@ func TestReferenceField(t *testing.T) {
 		testCase := testCase
 
 		t.Run(testCase.TestDescription, func(t *testing.T) {
-			if actual, expected := testCase.Reference.Field(), testCase.Expected; actual != expected {
+			actual, err := testCase.Reference.Field()
+
+			if err != nil && !testCase.ExpectError {
+				t.Fatalf("unexpected error: %s", err)
+			}
+
+			if err == nil && testCase.ExpectError {
+				t.Fatal("expected error, got none")
+			}
+
+			if expected := testCase.Expected; actual != expected {
 				t.Errorf("expected (%s), got: %s", expected, actual)
 			}
 		})
@@ -69,27 +80,28 @@ func TestReferenceType(t *testing.T) {
 	testCases := []struct {
 		TestDescription string
 		Reference       cfschema.Reference
+		ExpectError     bool
 		Expected        string
 	}{
 		{
 			TestDescription: "empty",
 			Reference:       cfschema.Reference(""),
-			Expected:        "",
+			ExpectError:     true,
 		},
 		{
 			TestDescription: "root",
 			Reference:       cfschema.Reference("/"),
-			Expected:        "",
+			ExpectError:     true,
 		},
 		{
 			TestDescription: "definitions prefix only",
 			Reference:       cfschema.Reference("/definitions"),
-			Expected:        "",
+			ExpectError:     true,
 		},
 		{
 			TestDescription: "properties prefix only",
 			Reference:       cfschema.Reference("/properties"),
-			Expected:        "",
+			ExpectError:     true,
 		},
 		{
 			TestDescription: "definition",
@@ -107,7 +119,17 @@ func TestReferenceType(t *testing.T) {
 		testCase := testCase
 
 		t.Run(testCase.TestDescription, func(t *testing.T) {
-			if actual, expected := testCase.Reference.Type(), testCase.Expected; actual != expected {
+			actual, err := testCase.Reference.Type()
+
+			if err != nil && !testCase.ExpectError {
+				t.Fatalf("unexpected error: %s", err)
+			}
+
+			if err == nil && testCase.ExpectError {
+				t.Fatal("expected error, got none")
+			}
+
+			if expected := testCase.Expected; actual != expected {
 				t.Errorf("expected (%s), got: %s", expected, actual)
 			}
 		})

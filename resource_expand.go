@@ -1,5 +1,9 @@
 package cfschema
 
+import (
+	"fmt"
+)
+
 // Expand replaces all Definition and Property JSON Pointer references with their content.
 //
 // This functionality removes the need for recursive logic when accessing
@@ -9,85 +13,108 @@ func (r *Resource) Expand() error {
 		return nil
 	}
 
-	for _, definition := range r.Definitions {
-		if ref := definition.Ref; ref != nil {
-			*definition = *r.ResolveProperty(definition)
-			definition.Ref = ref
+	for definitionName, definition := range r.Definitions {
+		resolved, err := r.Resolve(definition)
 
+		if err != nil {
+			return fmt.Errorf("error resolving Definition (%s): %w", definitionName, err)
+		}
+
+		if resolved {
 			continue
 		}
 
 		switch definition.Type.String() {
 		case PropertyTypeArray:
-			if definition.Items == nil || definition.Items.Ref == nil {
-				continue
+			_, err = r.Resolve(definition.Items)
+
+			if err != nil {
+				return fmt.Errorf("error resolving Definition (%s) Items: %w", definitionName, err)
 			}
-
-			ref := definition.Items.Ref
-			*definition.Items = *r.ResolveProperty(definition.Items)
-			definition.Items.Ref = ref
 		case PropertyTypeObject:
-			for _, objProperty := range definition.Properties {
-				if ref := objProperty.Ref; ref != nil {
-					*objProperty = *r.ResolveProperty(objProperty)
-					objProperty.Ref = ref
+			for objPropertyName, objProperty := range definition.Properties {
+				resolved, err := r.Resolve(objProperty)
 
+				if err != nil {
+					return fmt.Errorf("error resolving Definition (%s) Property (%s): %w", definitionName, objPropertyName, err)
+				}
+
+				if resolved {
 					continue
 				}
 
 				switch objProperty.Type.String() {
 				case PropertyTypeArray:
-					if objProperty.Items == nil || objProperty.Items.Ref == nil {
-						continue
-					}
+					_, err = r.Resolve(objProperty.Items)
 
-					ref := objProperty.Items.Ref
-					*objProperty.Items = *r.ResolveProperty(objProperty.Items)
-					objProperty.Items.Ref = ref
+					if err != nil {
+						return fmt.Errorf("error resolving Definition (%s) Property (%s) Items: %w", definitionName, objPropertyName, err)
+					}
 				}
 			}
 		}
 	}
 
-	for _, property := range r.Properties {
-		if ref := property.Ref; ref != nil {
-			*property = *r.ResolveProperty(property)
-			property.Ref = ref
+	for propertyName, property := range r.Properties {
+		resolved, err := r.Resolve(property)
 
+		if err != nil {
+			return fmt.Errorf("error resolving Property (%s): %w", propertyName, err)
+		}
+
+		if resolved {
 			continue
 		}
 
 		switch property.Type.String() {
 		case PropertyTypeArray:
-			if property.Items == nil || property.Items.Ref == nil {
-				continue
+			_, err = r.Resolve(property.Items)
+
+			if err != nil {
+				return fmt.Errorf("error resolving Property (%s) Items: %w", propertyName, err)
 			}
-
-			ref := property.Items.Ref
-			*property.Items = *r.ResolveProperty(property.Items)
-			property.Items.Ref = ref
 		case PropertyTypeObject:
-			for _, objProperty := range property.Properties {
-				if ref := objProperty.Ref; ref != nil {
-					*objProperty = *r.ResolveProperty(objProperty)
-					objProperty.Ref = ref
+			for objPropertyName, objProperty := range property.Properties {
+				resolved, err := r.Resolve(objProperty)
 
+				if err != nil {
+					return fmt.Errorf("error resolving Property (%s) Property (%s): %w", propertyName, objPropertyName, err)
+				}
+
+				if resolved {
 					continue
 				}
 
 				switch objProperty.Type.String() {
 				case PropertyTypeArray:
-					if objProperty.Items == nil || objProperty.Items.Ref == nil {
-						continue
-					}
+					_, err = r.Resolve(objProperty.Items)
 
-					ref := objProperty.Items.Ref
-					*objProperty.Items = *r.ResolveProperty(objProperty.Items)
-					objProperty.Items.Ref = ref
+					if err != nil {
+						return fmt.Errorf("error resolving Property (%s) Property (%s) Items: %w", propertyName, objPropertyName, err)
+					}
 				}
 			}
 		}
 	}
 
 	return nil
+}
+
+// Resolve resolves any Reference (JSON Pointer) in a Property.
+// Returns whether a Reference was resolved.
+func (r *Resource) Resolve(property *Property) (bool, error) {
+	if property != nil && property.Ref != nil {
+		ref := property.Ref
+		resolution, err := r.ResolveReference(*ref)
+
+		if err != nil {
+			return false, err
+		}
+
+		*property = *resolution
+
+		return true, nil
+	}
+
+	return false, nil
 }
