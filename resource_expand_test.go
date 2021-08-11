@@ -228,18 +228,19 @@ func TestResourceExpand_NestedDefinition(t *testing.T) {
 // 			}
 
 // 			properties := resource.Properties
-// 			var patternProperties map[string]*cfschema.Property
+// 			//var patternProperties map[string]*cfschema.Property
 // 			for i, propertyName := range testCase.PropertyPath {
 // 				property, ok := properties[propertyName]
 
 // 				if !ok {
-// 					if len(patternProperties) == 1 {
-// 						for _, v := range patternProperties {
-// 							property = v
-// 						}
-// 					} else {
-// 						t.Fatalf("expected resource property (%s), got none", propertyName)
-// 					}
+// 					// if len(patternProperties) == 1 {
+// 					// 	for _, v := range patternProperties {
+// 					// 		property = v
+// 					// 	}
+// 					// } else {
+// 					// 	t.Fatalf("expected resource property (%s), got none", propertyName)
+// 					// }
+// 					t.Fatalf("expected resource property (%s), got none", propertyName)
 // 				}
 
 // 				if property.Type == nil {
@@ -255,7 +256,7 @@ func TestResourceExpand_NestedDefinition(t *testing.T) {
 // 						t.Fatalf("expected resource property (%s) type (%s), got: %s", propertyName, expected, actual)
 // 					}
 
-// 					patternProperties = property.PatternProperties
+// 					//patternProperties = property.PatternProperties
 // 					properties = property.Properties
 // 				}
 // 			}

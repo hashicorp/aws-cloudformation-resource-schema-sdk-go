@@ -144,7 +144,7 @@ func TestResourceResolveProperty(t *testing.T) {
 		testCase := testCase
 
 		t.Run(testCase.TestDescription, func(t *testing.T) {
-			resolved, err := testCase.Resource.Resolve(testCase.Property)
+			resolved, err := testCase.Resource.ResolveProperty(testCase.Property)
 
 			if err != nil && !testCase.ExpectError {
 				t.Fatalf("unexpected error: %s", err)
