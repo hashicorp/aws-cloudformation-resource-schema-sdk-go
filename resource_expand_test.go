@@ -99,7 +99,7 @@ func TestResourceExpand_NestedDefinition(t *testing.T) {
 		{
 			TestDescription:      "valid",
 			MetaSchemaPath:       "provider.definition.schema.v1.json",
-			ResourceSchemaPath:   "AWS::ECS::Cluster.json",
+			ResourceSchemaPath:   "AWS_ECS_Cluster.json",
 			PropertyPath:         []string{"Configuration", "ExecuteCommandConfiguration", "LogConfiguration", "CloudWatchEncryptionEnabled"},
 			ExpectedPropertyType: cfschema.PropertyTypeBoolean,
 		},
@@ -183,7 +183,7 @@ func TestResourceExpand_NestedDefinition(t *testing.T) {
 // 		{
 // 			TestDescription:      "valid",
 // 			MetaSchemaPath:       "provider.definition.schema.v1.json",
-// 			ResourceSchemaPath:   "AWS::GreengrassV2::ComponentVersion.json",
+// 			ResourceSchemaPath:   "AWS_GreengrassV2_ComponentVersion.json",
 // 			PropertyPath:         []string{"LambdaFunction", "ComponentDependencies", "VersionRequirement"},
 // 			ExpectedPropertyType: cfschema.PropertyTypeString,
 // 		},
