@@ -42,6 +42,16 @@ func TestReferenceField(t *testing.T) {
 			Reference:       cfschema.Reference("/properties/test"),
 			Expected:        "test",
 		},
+		{
+			TestDescription: "definition with prefix",
+			Reference:       cfschema.Reference("#/definitions/test"),
+			Expected:        "test",
+		},
+		{
+			TestDescription: "property with prefix",
+			Reference:       cfschema.Reference("#/properties/test"),
+			Expected:        "test",
+		},
 	}
 
 	for _, testCase := range testCases {
