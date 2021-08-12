@@ -1,5 +1,9 @@
 package cfschema
 
+import (
+	"fmt"
+)
+
 type Resource struct {
 	AdditionalIdentifiers           []PropertyJsonPointers `json:"additionalIdentifiers,omitempty"`
 	AdditionalProperties            *bool                  `json:"additionalProperties,omitempty"`
@@ -49,19 +53,39 @@ func (r *Resource) IsRequired(name string) bool {
 	return false
 }
 
-func (r *Resource) ResolveProperty(p *Property) *Property {
-	if r == nil || p == nil {
-		return nil
+// ResolveReference resolves a Reference (JSON Pointer) into a Property.
+func (r *Resource) ResolveReference(ref Reference) (*Property, error) {
+	if r == nil {
+		return nil, nil
 	}
 
-	if p.Ref != nil {
-		switch p.Ref.Type() {
-		case ReferenceTypeDefinitions:
-			return r.Definitions[p.Ref.Field()]
-		case ReferenceTypeProperties:
-			return r.Properties[p.Ref.Field()]
-		}
+	typ, err := ref.Type()
+
+	if err != nil {
+		return nil, err
 	}
 
-	return p
+	var properties map[string]*Property
+
+	switch typ {
+	case ReferenceTypeDefinitions:
+		properties = r.Definitions
+	case ReferenceTypeProperties:
+		properties = r.Properties
+	default:
+		return nil, fmt.Errorf("unexpected Reference type: %s", typ)
+	}
+
+	field, err := ref.Field()
+
+	if err != nil {
+		return nil, err
+	}
+
+	property, ok := properties[field]
+	if !ok || property == nil {
+		return nil, fmt.Errorf("%s/%s not found", typ, field)
+	}
+
+	return property, nil
 }

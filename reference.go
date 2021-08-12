@@ -1,6 +1,9 @@
 package cfschema
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 const (
 	ReferenceAnchor          = "#"
@@ -13,42 +16,30 @@ const (
 type Reference string
 
 // Field returns the JSON Pointer string path after the type.
-func (r *Reference) Field() string {
-	if r == nil {
-		return ""
+func (r Reference) Field() (string, error) {
+	referenceParts := strings.Split(strings.TrimPrefix(string(r), ReferenceAnchor), ReferenceSeparator)
+
+	if got, expected := len(referenceParts), 3; got != expected {
+		return "", fmt.Errorf("invalid Reference (%s). Expected %d parts, got %d", r, expected, got)
 	}
 
-	referenceParts := strings.Split(strings.TrimPrefix(string(*r), ReferenceAnchor), ReferenceSeparator)
-
-	if len(referenceParts) != 3 {
-		return ""
-	}
-
-	return referenceParts[2]
+	return referenceParts[2], nil
 }
 
-// String returns the string representation of Reference.
-func (r *Reference) String() string {
-	if r == nil {
-		return ""
-	}
-
-	return string(*r)
+// String returns the string representation of a Reference.
+func (r Reference) String() string {
+	return string(r)
 }
 
 // Type returns the first path part of the JSON Pointer.
 //
 // In CloudFormation Resources, this should be definitions or properties.
-func (r *Reference) Type() string {
-	if r == nil {
-		return ""
+func (r Reference) Type() (string, error) {
+	referenceParts := strings.Split(strings.TrimPrefix(string(r), ReferenceAnchor), ReferenceSeparator)
+
+	if got, expected := len(referenceParts), 3; got != expected {
+		return "", fmt.Errorf("invalid Reference (%s). Expected %d parts, got %d", r, expected, got)
 	}
 
-	referenceParts := strings.Split(strings.TrimPrefix(string(*r), ReferenceAnchor), ReferenceSeparator)
-
-	if len(referenceParts) != 3 {
-		return ""
-	}
-
-	return referenceParts[1]
+	return referenceParts[1], nil
 }
