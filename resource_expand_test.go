@@ -103,6 +103,13 @@ func TestResourceExpand_NestedDefinition(t *testing.T) {
 			PropertyPath:         []string{"Configuration", "ExecuteCommandConfiguration", "LogConfiguration", "CloudWatchEncryptionEnabled"},
 			ExpectedPropertyType: cfschema.PropertyTypeBoolean,
 		},
+		{
+			TestDescription:      "valid in array",
+			MetaSchemaPath:       "provider.definition.schema.v1.json",
+			ResourceSchemaPath:   "AWS_WAFv2_RuleGroup.json",
+			PropertyPath:         []string{"Rules", "Action", "Allow", "CustomRequestHandling", "InsertHeaders", "Name"},
+			ExpectedPropertyType: cfschema.PropertyTypeString,
+		},
 	}
 
 	for _, testCase := range testCases {
