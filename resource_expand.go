@@ -100,8 +100,16 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 					if err != nil {
 						return fmt.Errorf("error resolving %s Property (%s) Items: %w", propertyName, objPropertyName, err)
 					}
-
 				case PropertyTypeObject:
+					// Pragmatically resolve any References at this level even though they are not allowed.
+					for objPropertyName2, objProperty2 := range objProperty.Properties {
+						_, err := r.ResolveProperty(objProperty2)
+
+						if err != nil {
+							return fmt.Errorf("error resolving %s Property (%s) Property (%s): %w", propertyName, objPropertyName, objPropertyName2, err)
+						}
+					}
+
 					for pattern, patternProperty := range objProperty.PatternProperties {
 						// For example:
 						// "LambdaFunctionRecipeSource": {
@@ -122,7 +130,6 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 						if err != nil {
 							return fmt.Errorf("error resolving %s Property (%s) Pattern(%s): %w", propertyName, objPropertyName, pattern, err)
 						}
-
 					}
 				}
 			}

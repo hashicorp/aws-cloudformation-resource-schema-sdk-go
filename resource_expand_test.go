@@ -160,11 +160,14 @@ func TestResourceExpand_NestedDefinition(t *testing.T) {
 						t.Errorf("expected resource property (%s) type (%s), got: %s", propertyName, expected, actual)
 					}
 				} else {
-					if actual, expected := *property.Type, cfschema.Type(cfschema.PropertyTypeObject); actual != expected {
-						t.Fatalf("expected resource property (%s) type (%s), got: %s", propertyName, expected, actual)
+					switch typ := (*property.Type).String(); typ {
+					case cfschema.PropertyTypeArray:
+						properties = property.Items.Properties
+					case cfschema.PropertyTypeObject:
+						properties = property.Properties
+					default:
+						t.Fatalf("resource property (%s) type (%s)", propertyName, typ)
 					}
-
-					properties = property.Properties
 				}
 			}
 		})
@@ -267,6 +270,107 @@ func TestResourceExpand_PatternProperties(t *testing.T) {
 
 					patternProperties = property.PatternProperties
 					properties = property.Properties
+				}
+			}
+		})
+	}
+}
+
+func TestResourceExpand_SecondLevelNestedDefinition(t *testing.T) {
+	testCases := []struct {
+		TestDescription      string
+		MetaSchemaPath       string
+		ResourceSchemaPath   string
+		ExpectError          bool
+		PropertyPath         []string
+		ExpectedPropertyType cfschema.Type
+	}{
+		{
+			TestDescription:      "valid 1 level simple",
+			MetaSchemaPath:       "provider.definition.schema.v1.json",
+			ResourceSchemaPath:   "AWS_ImageBuilder_DistributionConfiguration.json",
+			PropertyPath:         []string{"Distributions", "Region"},
+			ExpectedPropertyType: cfschema.PropertyTypeString,
+		},
+		{
+			TestDescription:      "valid 1 level object",
+			MetaSchemaPath:       "provider.definition.schema.v1.json",
+			ResourceSchemaPath:   "AWS_ImageBuilder_DistributionConfiguration.json",
+			PropertyPath:         []string{"Distributions", "ContainerDistributionConfiguration", "TargetRepository"},
+			ExpectedPropertyType: cfschema.PropertyTypeObject,
+		},
+		{
+			TestDescription:      "valid 2 level simple",
+			MetaSchemaPath:       "provider.definition.schema.v1.json",
+			ResourceSchemaPath:   "AWS_ImageBuilder_DistributionConfiguration.json",
+			PropertyPath:         []string{"Distributions", "ContainerDistributionConfiguration", "TargetRepository", "RepositoryName"},
+			ExpectedPropertyType: cfschema.PropertyTypeString,
+		},
+	}
+
+	for _, testCase := range testCases {
+		testCase := testCase
+
+		t.Run(testCase.TestDescription, func(t *testing.T) {
+			metaSchema, err := cfschema.NewMetaJsonSchemaPath(filepath.Join("testdata", testCase.MetaSchemaPath))
+
+			if err != nil {
+				t.Fatalf("unexpected NewMetaJsonSchemaPath() error: %s", err)
+			}
+
+			resourceSchema, err := cfschema.NewResourceJsonSchemaPath(filepath.Join("testdata", testCase.ResourceSchemaPath))
+
+			if err != nil {
+				t.Fatalf("unexpected NewResourceJsonSchemaPath() error: %s", err)
+			}
+
+			err = metaSchema.ValidateResourceJsonSchema(resourceSchema)
+
+			if err != nil {
+				t.Fatalf("unexpected ValidateResourceJsonSchema() error: %s", err)
+			}
+
+			resource, err := resourceSchema.Resource()
+
+			if err != nil {
+				t.Fatalf("unexpected Resource() error: %s", err)
+			}
+
+			err = resource.Expand()
+
+			if err != nil && !testCase.ExpectError {
+				t.Fatalf("unexpected error: %s", err)
+			}
+
+			if err == nil && testCase.ExpectError {
+				t.Fatal("expected error, got none")
+			}
+
+			properties := resource.Properties
+			for i, propertyName := range testCase.PropertyPath {
+				property, ok := properties[propertyName]
+
+				if !ok {
+					t.Fatalf("expected resource property (%s), got none", propertyName)
+				}
+
+				if property.Type == nil {
+					t.Fatalf("unexpected resource property (%s) type, got none", propertyName)
+				}
+
+				if i == len(testCase.PropertyPath)-1 {
+					if actual, expected := *property.Type, testCase.ExpectedPropertyType; actual != expected {
+						t.Errorf("expected resource property (%s) type (%s), got: %s", propertyName, expected, actual)
+					}
+				} else {
+					switch typ := (*property.Type).String(); typ {
+					case cfschema.PropertyTypeArray:
+						properties = property.Items.Properties
+					case cfschema.PropertyTypeObject:
+						properties = property.Properties
+					default:
+						t.Fatalf("resource property (%s) type (%s)", propertyName, typ)
+					}
 				}
 			}
 		})
