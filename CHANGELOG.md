@@ -1,3 +1,7 @@
+## v0.6.0
+
+Resolve patternProperty refs during resource expansion.
+
 ## v0.5.0
 
 Allow property examples to be array of any.
