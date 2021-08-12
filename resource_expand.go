@@ -5,7 +5,9 @@ import (
 )
 
 // Expand replaces all Definition and Property JSON Pointer references with their content.
-// This functionality removes the need for recursive logic when accessingn Definition and Property.
+// This functionality removes the need for recursive logic when accessing Definitions and Properties.
+// In unresolved form nested properties are not allowed, instead nested properties use a '$ref' JSON Pointer to reference a definition.
+// See https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/resource-type-schema.html#schema-properties-properties.
 func (r *Resource) Expand() error {
 	if r == nil {
 		return nil
@@ -27,6 +29,7 @@ func (r *Resource) Expand() error {
 }
 
 // ResolveProperties resolves all References in a top-level name-to-property map.
+// In unresolved form nested properties are not allowed so we don't need to recurse.
 func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 	for propertyName, property := range properties {
 		resolved, err := r.ResolveProperty(property)
@@ -36,11 +39,22 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 		}
 
 		if resolved {
+			// For example:
+			// "Configuration": {
+			// 	  "$ref": "#/definitions/ClusterConfiguration"
+			// },
 			continue
 		}
 
 		switch property.Type.String() {
 		case PropertyTypeArray:
+			// For example:
+			// "DefaultCapacityProviderStrategy": {
+			//   "type": "array",
+			//   "items": {
+			//     "$ref": "#/definitions/CapacityProviderStrategyItem"
+			// 	 }
+			// },
 			_, err = r.ResolveProperty(property.Items)
 
 			if err != nil {
@@ -55,11 +69,32 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 				}
 
 				if resolved {
+					// For example:
+					// "ClusterConfiguration": {
+					//   "type": "object",
+					// 	 "properties": {
+					// 	   "ExecuteCommandConfiguration": {
+					// 	     "$ref": "#/definitions/ExecuteCommandConfiguration"
+					// 	   }
+					// 	 }
+					// },
 					continue
 				}
 
 				switch objProperty.Type.String() {
 				case PropertyTypeArray:
+					// For example:
+					// "LambdaContainerParams": {
+					//   "type": "object",
+					// 	 "properties": {
+					// 	   "Volumes": {
+					// 		 "type": "array",
+					// 		 "items": {
+					// 		   "$ref": "#/definitions/LambdaVolumeMount"
+					// 		 }
+					// 	   }
+					// 	 }
+					// },
 					_, err = r.ResolveProperty(objProperty.Items)
 
 					if err != nil {
@@ -68,11 +103,26 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 
 				case PropertyTypeObject:
 					for pattern, patternProperty := range objProperty.PatternProperties {
+						// For example:
+						// "LambdaFunctionRecipeSource": {
+						//   "type": "object",
+						// 	 "properties": {
+						// 	   "ComponentDependencies": {
+						// 		 "type": "object",
+						// 		 "patternProperties": {
+						// 		   "": {
+						// 			 "$ref": "#/definitions/ComponentDependencyRequirement"
+						// 		   }
+						// 		 }
+						// 	   }
+						// 	 }
+						// },
 						_, err = r.ResolveProperty(patternProperty)
 
 						if err != nil {
 							return fmt.Errorf("error resolving %s Property (%s) Pattern(%s): %w", propertyName, objPropertyName, pattern, err)
 						}
+
 					}
 				}
 			}
@@ -85,11 +135,32 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 				}
 
 				if resolved {
+					// For example:
+					// "Tags": {
+					// 	 "type": "object",
+					// 	 "patternProperties": {
+					// 	   "": {
+					// 		 "$ref": "#/definitions/TagValue"
+					// 	   }
+					// 	 }
+					// },
 					continue
 				}
 
 				switch objProperty.Type.String() {
 				case PropertyTypeArray:
+					// For example:
+					// "Tags": {
+					// 	 "type": "object",
+					// 	 "patternProperties": {
+					// 	   "": {
+					// 		 "type": "array",
+					// 		 "items": {
+					// 		   "$ref": "#/definitions/TagValue"
+					// 		 }
+					// 	   }
+					// 	 }
+					// },
 					_, err = r.ResolveProperty(objProperty.Items)
 
 					if err != nil {
