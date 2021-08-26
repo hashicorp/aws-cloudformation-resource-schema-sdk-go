@@ -39,6 +39,12 @@ func TestPropertyJsonPointerEqualsPath(t *testing.T) {
 			Expected:            false,
 		},
 		{
+			TestDescription:     "first level mismatch with prefix",
+			PropertyJsonPointer: "/properties/testing",
+			Path:                []string{"test"},
+			Expected:            false,
+		},
+		{
 			TestDescription:     "multi level match",
 			PropertyJsonPointer: "/properties/parent/nested",
 			Path:                []string{"parent", "nested"},
@@ -66,6 +72,12 @@ func TestPropertyJsonPointerEqualsPath(t *testing.T) {
 			TestDescription:     "multi level mismatch wrong back",
 			PropertyJsonPointer: "/properties/parent/nested",
 			Path:                []string{"parent", "notnested"},
+			Expected:            false,
+		},
+		{
+			TestDescription:     "multi level mismatch with prefix",
+			PropertyJsonPointer: "/properties/parent/testing",
+			Path:                []string{"parent", "test"},
 			Expected:            false,
 		},
 	}
@@ -113,6 +125,12 @@ func TestPropertyJsonPointerEqualsStringPath(t *testing.T) {
 			Expected:            false,
 		},
 		{
+			TestDescription:     "first level mismatch with prefix",
+			PropertyJsonPointer: "/properties/testing",
+			Path:                "/test",
+			Expected:            false,
+		},
+		{
 			TestDescription:     "multi level match",
 			PropertyJsonPointer: "/properties/parent/nested",
 			Path:                "/parent/nested",
@@ -140,6 +158,12 @@ func TestPropertyJsonPointerEqualsStringPath(t *testing.T) {
 			TestDescription:     "multi level mismatch wrong back",
 			PropertyJsonPointer: "/properties/parent/nested",
 			Path:                "/parent/notnested",
+			Expected:            false,
+		},
+		{
+			TestDescription:     "multi level mismatch with prefix",
+			PropertyJsonPointer: "/properties/parent/testing",
+			Path:                "/parent/test",
 			Expected:            false,
 		},
 	}
