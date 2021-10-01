@@ -1,3 +1,7 @@
+## v0.12.0 (October 1, 2021)
+
+Support relative `file://` URLs in JSON Schema document when loading from a file path.
+
 ## v0.11.0 (September 28, 2021)
 
 Make JSON Pointer prefix and separator constants public.
