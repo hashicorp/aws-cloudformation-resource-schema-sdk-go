@@ -178,6 +178,19 @@ func TestNewMetaJsonSchemaDocument(t *testing.T) {
 				t.Fatalf("unexpected error reading file (%s): %s", path, err)
 			}
 
+			cwd, err := os.Getwd()
+
+			if err != nil {
+				t.Fatalf("getting current directory: %s", err)
+			}
+
+			defer func() {
+				os.Chdir(cwd)
+			}()
+
+			// CD to the schema's directory so as to resolve any relative 'file://' URLs.
+			os.Chdir(filepath.Dir(path))
+
 			metaSchema, err := cfschema.NewMetaJsonSchemaDocument(string(file))
 
 			if err != nil && !testCase.ExpectError {

@@ -3,7 +3,7 @@ package cfschema
 import (
 	"fmt"
 	"os"
-	p "path"
+	"path/filepath"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/xeipuuv/gojsonschema"
@@ -95,7 +95,7 @@ func newJsonSchemaPath(path string) (*jsonSchema, error) {
 	}()
 
 	// CD to the schema's directory so as to resolve any relative 'file://' URLs.
-	os.Chdir(p.Dir(path))
+	os.Chdir(filepath.Dir(path))
 
 	js, err := newJsonSchemaDocument(string(f))
 
