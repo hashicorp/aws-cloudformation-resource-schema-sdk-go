@@ -251,7 +251,7 @@
         },
         "typeConfiguration": {
             "description": "TypeConfiguration to set the configuration data for registry types. This configuration data is not passed through the resource properties in template. One of the possible use cases is configuring auth keys for 3P resource providers.",
-            "$ref": "provider.configuration.definition.schema.v1.json"
+            "$ref": "file://./provider.configuration.definition.schema.v1.json"
         }
     },
     "required": [
