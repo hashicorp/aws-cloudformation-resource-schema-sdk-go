@@ -87,7 +87,7 @@ func newJsonSchemaPath(path string) (*jsonSchema, error) {
 	cwd, err := os.Getwd()
 
 	if err != nil {
-		return nil, fmt.Errorf("error getting current directory %w", err)
+		return nil, fmt.Errorf("error getting current directory: %w", err)
 	}
 
 	defer func() {
