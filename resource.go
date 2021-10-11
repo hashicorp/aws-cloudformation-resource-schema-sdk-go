@@ -18,12 +18,14 @@ type Resource struct {
 	OneOf                           []*PropertySubschema   `json:"oneOf,omitempty"`
 	PrimaryIdentifier               PropertyJsonPointers   `json:"primaryIdentifier,omitempty"`
 	Properties                      map[string]*Property   `json:"properties,omitempty"`
+	PropertyTransform               map[string]string      `json:"propertyTransform,omitempty"`
 	ReadOnlyProperties              PropertyJsonPointers   `json:"readOnlyProperties,omitempty"`
 	ReplacementStrategy             *string                `json:"replacementStrategy,omitempty"`
 	Required                        []string               `json:"required,omitempty"`
 	ResourceLink                    *ResourceLink          `json:"resourceLink,omitempty"`
 	SourceURL                       *string                `json:"sourceUrl,omitempty"`
 	Taggable                        *bool                  `json:"taggable,omitempty"`
+	Tagging                         *Tagging               `json:"tagging,omitempty"`
 	TypeName                        *string                `json:"typeName,omitempty"`
 	WriteOnlyProperties             PropertyJsonPointers   `json:"writeOnlyProperties,omitempty"`
 }
