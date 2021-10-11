@@ -33,6 +33,20 @@ func (r *Resource) Expand() error {
 // so support arbitrarily deeply nested references.
 func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 	for propertyName, property := range properties {
+		// For example:
+		// "Configuration": {
+		//   "$ref": "#/definitions/ClusterConfiguration"
+		// },
+		resolved, err := r.ResolveProperty(property)
+
+		if err != nil {
+			return fmt.Errorf("error resolving %s: %w", propertyName, err)
+		}
+
+		if resolved {
+			continue
+		}
+
 		switch property.Type.String() {
 		case PropertyTypeArray:
 			// For example:
@@ -42,7 +56,7 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 			//     "$ref": "#/definitions/CapacityProviderStrategyItem"
 			//   }
 			// },
-			_, err := r.ResolveProperty(property.Items)
+			_, err = r.ResolveProperty(property.Items)
 
 			if err != nil {
 				return fmt.Errorf("error resolving %s Items: %w", propertyName, err)
@@ -58,7 +72,7 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 			//     }
 			//   }
 			// },
-			err := r.ResolveProperties(property.Properties)
+			err = r.ResolveProperties(property.Properties)
 
 			if err != nil {
 				return fmt.Errorf("error resolving %s Properties: %w", propertyName, err)
@@ -82,17 +96,6 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 
 			if err != nil {
 				return fmt.Errorf("error resolving %s PatternProperties: %w", propertyName, err)
-			}
-
-		default:
-			// For example:
-			// "Configuration": {
-			//   "$ref": "#/definitions/ClusterConfiguration"
-			// },
-			_, err := r.ResolveProperty(property)
-
-			if err != nil {
-				return fmt.Errorf("error resolving %s: %w", propertyName, err)
 			}
 		}
 	}
