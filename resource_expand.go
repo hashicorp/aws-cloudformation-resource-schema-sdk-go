@@ -97,6 +97,26 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 			if err != nil {
 				return fmt.Errorf("error resolving %s PatternProperties: %w", propertyName, err)
 			}
+
+		case "":
+			if len(property.Properties) > 0 {
+				// For example:
+				// "PresignedUrlConfig": {
+				//   "properties": {
+				//     "RoleArn": {
+				//       "$ref": "#/definitions/RoleArn"
+				//     },
+				//     "ExpiresInSec": {
+				//       "$ref": "#/definitions/ExpiresInSec"
+				//     }
+				//   }
+				// },
+				err = r.ResolveProperties(property.Properties)
+
+				if err != nil {
+					return fmt.Errorf("error resolving %s Properties: %w", propertyName, err)
+				}
+			}
 		}
 	}
 
