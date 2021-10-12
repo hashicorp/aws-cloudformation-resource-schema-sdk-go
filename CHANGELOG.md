@@ -1,6 +1,7 @@
 ## v0.13.0 (Unreleased)
 
 Allow arbitrary levels of nesting when expanding Definition and Property JSON Pointer references.
+Support `propertyTransform` and `tagging` keywords.
 
 ## v0.12.0 (October 1, 2021)
 
