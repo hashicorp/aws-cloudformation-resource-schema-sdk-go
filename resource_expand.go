@@ -29,9 +29,14 @@ func (r *Resource) Expand() error {
 }
 
 // ResolveProperties resolves all References in a top-level name-to-property map.
-// In unresolved form nested properties are not allowed so we don't need to recurse.
+// In theory unresolved form nested properties are not allowed but in practice they do occur,
+// so support arbitrarily deeply nested references.
 func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 	for propertyName, property := range properties {
+		// For example:
+		// "Configuration": {
+		//   "$ref": "#/definitions/ClusterConfiguration"
+		// },
 		resolved, err := r.ResolveProperty(property)
 
 		if err != nil {
@@ -39,10 +44,6 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 		}
 
 		if resolved {
-			// For example:
-			// "Configuration": {
-			//   "$ref": "#/definitions/ClusterConfiguration"
-			// },
 			continue
 		}
 
@@ -60,119 +61,60 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 			if err != nil {
 				return fmt.Errorf("error resolving %s Items: %w", propertyName, err)
 			}
+
 		case PropertyTypeObject:
-			for objPropertyName, objProperty := range property.Properties {
-				resolved, err := r.ResolveProperty(objProperty)
+			// For example:
+			// "ClusterConfiguration": {
+			//   "type": "object",
+			//   "properties": {
+			//     "ExecuteCommandConfiguration": {
+			//       "$ref": "#/definitions/ExecuteCommandConfiguration"
+			//     }
+			//   }
+			// },
+			err = r.ResolveProperties(property.Properties)
 
-				if err != nil {
-					return fmt.Errorf("error resolving %s Property (%s): %w", propertyName, objPropertyName, err)
-				}
-
-				if resolved {
-					// For example:
-					// "ClusterConfiguration": {
-					//   "type": "object",
-					//   "properties": {
-					//     "ExecuteCommandConfiguration": {
-					//       "$ref": "#/definitions/ExecuteCommandConfiguration"
-					//     }
-					//   }
-					// },
-					continue
-				}
-
-				switch objProperty.Type.String() {
-				case PropertyTypeArray:
-					// For example:
-					// "LambdaContainerParams": {
-					//   "type": "object",
-					//   "properties": {
-					//     "Volumes": {
-					//       "type": "array",
-					//       "items": {
-					//         "$ref": "#/definitions/LambdaVolumeMount"
-					//       }
-					//     }
-					//   }
-					// },
-					_, err = r.ResolveProperty(objProperty.Items)
-
-					if err != nil {
-						return fmt.Errorf("error resolving %s Property (%s) Items: %w", propertyName, objPropertyName, err)
-					}
-				case PropertyTypeObject:
-					// Pragmatically resolve any References at this level even though they are not allowed.
-					for objPropertyName2, objProperty2 := range objProperty.Properties {
-						_, err := r.ResolveProperty(objProperty2)
-
-						if err != nil {
-							return fmt.Errorf("error resolving %s Property (%s) Property (%s): %w", propertyName, objPropertyName, objPropertyName2, err)
-						}
-					}
-
-					for pattern, patternProperty := range objProperty.PatternProperties {
-						// For example:
-						// "LambdaFunctionRecipeSource": {
-						//   "type": "object",
-						//   "properties": {
-						//     "ComponentDependencies": {
-						//       "type": "object",
-						//       "patternProperties": {
-						//         "": {
-						//           "$ref": "#/definitions/ComponentDependencyRequirement"
-						//         }
-						//       }
-						//     }
-						//   }
-						// },
-						_, err = r.ResolveProperty(patternProperty)
-
-						if err != nil {
-							return fmt.Errorf("error resolving %s Property (%s) Pattern(%s): %w", propertyName, objPropertyName, pattern, err)
-						}
-					}
-				}
+			if err != nil {
+				return fmt.Errorf("error resolving %s Properties: %w", propertyName, err)
 			}
 
-			for patternName, objProperty := range property.PatternProperties {
-				resolved, err := r.ResolveProperty(objProperty)
+			// For example:
+			// "LambdaFunctionRecipeSource": {
+			//   "type": "object",
+			//   "properties": {
+			//     "ComponentDependencies": {
+			//       "type": "object",
+			//       "patternProperties": {
+			//         "": {
+			//           "$ref": "#/definitions/ComponentDependencyRequirement"
+			//         }
+			//       }
+			//     }
+			//   }
+			// },
+			err = r.ResolveProperties(property.PatternProperties)
+
+			if err != nil {
+				return fmt.Errorf("error resolving %s PatternProperties: %w", propertyName, err)
+			}
+
+		case "":
+			if len(property.Properties) > 0 {
+				// For example:
+				// "PresignedUrlConfig": {
+				//   "properties": {
+				//     "RoleArn": {
+				//       "$ref": "#/definitions/RoleArn"
+				//     },
+				//     "ExpiresInSec": {
+				//       "$ref": "#/definitions/ExpiresInSec"
+				//     }
+				//   }
+				// },
+				err = r.ResolveProperties(property.Properties)
 
 				if err != nil {
-					return fmt.Errorf("error resolving %s pattern Property (%s): %w", propertyName, patternName, err)
-				}
-
-				if resolved {
-					// For example:
-					// "Tags": {
-					//   "type": "object",
-					//   "patternProperties": {
-					//     "": {
-					//       "$ref": "#/definitions/TagValue"
-					//     }
-					//   }
-					// },
-					continue
-				}
-
-				switch objProperty.Type.String() {
-				case PropertyTypeArray:
-					// For example:
-					// "Tags": {
-					//   "type": "object",
-					//   "patternProperties": {
-					//     "": {
-					//       "type": "array",
-					//       "items": {
-					//         "$ref": "#/definitions/TagValue"
-					//       }
-					//     }
-					//   }
-					// },
-					_, err = r.ResolveProperty(objProperty.Items)
-
-					if err != nil {
-						return fmt.Errorf("error resolving %s Property (%s) Items: %w", propertyName, patternName, err)
-					}
+					return fmt.Errorf("error resolving %s Properties: %w", propertyName, err)
 				}
 			}
 		}
@@ -186,6 +128,7 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 func (r *Resource) ResolveProperty(property *Property) (bool, error) {
 	if property != nil && property.Ref != nil {
 		defaultValue := property.Default
+		description := property.Description
 		ref := property.Ref
 		resolution, err := r.ResolveReference(*ref)
 
@@ -198,6 +141,11 @@ func (r *Resource) ResolveProperty(property *Property) (bool, error) {
 		// Ensure that any default value is not lost.
 		if defaultValue != nil {
 			property.Default = defaultValue
+		}
+
+		// Prefer any description from the unresolved property.
+		if description != nil && *description != "" {
+			property.Description = description
 		}
 
 		return true, nil

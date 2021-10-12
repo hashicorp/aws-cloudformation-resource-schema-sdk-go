@@ -110,6 +110,13 @@ func TestResourceExpand_NestedDefinition(t *testing.T) {
 			PropertyPath:         []string{"Rules", "Action", "Allow", "CustomRequestHandling", "InsertHeaders", "Name"},
 			ExpectedPropertyType: cfschema.PropertyTypeString,
 		},
+		{
+			TestDescription:      "no type specified",
+			MetaSchemaPath:       "provider.definition.schema.v1.json",
+			ResourceSchemaPath:   "AWS_IoT_JobTemplate.json",
+			PropertyPath:         []string{"PresignedUrlConfig", "ExpiresInSec"},
+			ExpectedPropertyType: cfschema.PropertyTypeInteger,
+		},
 	}
 
 	for _, testCase := range testCases {
@@ -159,7 +166,12 @@ func TestResourceExpand_NestedDefinition(t *testing.T) {
 				}
 
 				if property.Type == nil {
-					t.Fatalf("unexpected resource property (%s) type, got none", propertyName)
+					if len(property.Properties) > 0 {
+						properties = property.Properties
+						continue
+					} else {
+						t.Fatalf("unexpected resource property (%s) type, got none", propertyName)
+					}
 				}
 
 				if i == len(testCase.PropertyPath)-1 {

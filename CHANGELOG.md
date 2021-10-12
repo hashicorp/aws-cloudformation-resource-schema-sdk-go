@@ -1,3 +1,7 @@
+## v0.13.0 (Unreleased)
+
+Allow arbitrary levels of nesting when expanding Definition and Property JSON Pointer references.
+
 ## v0.12.0 (October 1, 2021)
 
 Support relative `file://` URLs in JSON Schema document when loading from a file path.
