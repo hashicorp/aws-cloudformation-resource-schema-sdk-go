@@ -108,6 +108,7 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 func (r *Resource) ResolveProperty(property *Property) (bool, error) {
 	if property != nil && property.Ref != nil {
 		defaultValue := property.Default
+		description := property.Description
 		ref := property.Ref
 		resolution, err := r.ResolveReference(*ref)
 
@@ -120,6 +121,11 @@ func (r *Resource) ResolveProperty(property *Property) (bool, error) {
 		// Ensure that any default value is not lost.
 		if defaultValue != nil {
 			property.Default = defaultValue
+		}
+
+		// Prefer any description from the unresolved property.
+		if description != nil && *description != "" {
+			property.Description = description
 		}
 
 		return true, nil
