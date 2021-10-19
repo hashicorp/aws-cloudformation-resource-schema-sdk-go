@@ -126,6 +126,16 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 			}
 
 		case "":
+			if len(property.Properties) == 0 && len(property.PatternProperties) == 0 && len(property.OneOf) > 0 {
+				property.Properties, err = r.ResolveWrappedOneOfProperties(property.OneOf)
+
+				if err != nil {
+					return fmt.Errorf("error unwrapping %s OneOf Properties: %w", propertyName, err)
+				}
+
+				property.OneOf = nil
+			}
+
 			if len(property.Properties) > 0 {
 				// For example:
 				// "PresignedUrlConfig": {
