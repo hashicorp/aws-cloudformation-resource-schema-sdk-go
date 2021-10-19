@@ -325,6 +325,13 @@ func TestResourceExpand_SecondLevelNestedDefinition(t *testing.T) {
 			PropertyPath:         []string{"Distributions", "ContainerDistributionConfiguration", "TargetRepository", "RepositoryName"},
 			ExpectedPropertyType: cfschema.PropertyTypeString,
 		},
+		{
+			TestDescription:      "unwrap oneOf",
+			MetaSchemaPath:       "provider.definition.schema.v1.json",
+			ResourceSchemaPath:   "AWS_S3ObjectLambda_AccessPoint.json",
+			PropertyPath:         []string{"ObjectLambdaConfiguration", "TransformationConfigurations", "ContentTransformation", "AwsLambda", "FunctionArn"},
+			ExpectedPropertyType: cfschema.PropertyTypeString,
+		},
 	}
 
 	for _, testCase := range testCases {

@@ -63,6 +63,31 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 			}
 
 		case PropertyTypeObject:
+			if len(property.Properties) == 0 && len(property.PatternProperties) == 0 && len(property.OneOf) > 0 {
+				// For example:
+				// "ContentTransformation": {
+				//   "type": "object",
+				//   "oneOf": [
+				//     {
+				//       "additionalProperties": false,
+				//       "properties": {
+				//         "AwsLambda": {
+				//           "$ref": "#/definitions/AwsLambda"
+				//         }
+				//       },
+				//       "required": [
+				//         "AwsLambda"
+				//       ]
+				//     }
+				//   ]
+				// },
+				property.Properties, err = r.ResolveWrappedOneOfProperties(property.OneOf)
+
+				if err != nil {
+					return fmt.Errorf("error unwrapping %s OneOf Properties: %w", propertyName, err)
+				}
+			}
+
 			// For example:
 			// "ClusterConfiguration": {
 			//   "type": "object",
@@ -152,4 +177,28 @@ func (r *Resource) ResolveProperty(property *Property) (bool, error) {
 	}
 
 	return false, nil
+}
+
+// ResolveWrappedOneOfProperties resolves any Reference (JSON Pointer) in a set of properties wrapped in OneOf.
+// Returns the unwrapped name-to-property map.
+func (r *Resource) ResolveWrappedOneOfProperties(propertySubschemas []*PropertySubschema) (map[string]*Property, error) {
+	unwrappedProperties := make(map[string]*Property)
+
+	for _, propertySubschema := range propertySubschemas {
+		properties := propertySubschema.Properties
+
+		if len(properties) == 0 {
+			continue
+		}
+
+		if err := r.ResolveProperties(properties); err != nil {
+			return nil, err
+		}
+
+		for propertyName, property := range properties {
+			unwrappedProperties[propertyName] = property
+		}
+	}
+
+	return unwrappedProperties, nil
 }
