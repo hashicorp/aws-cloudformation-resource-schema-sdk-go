@@ -86,6 +86,8 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 				if err != nil {
 					return fmt.Errorf("error unwrapping %s OneOf Properties: %w", propertyName, err)
 				}
+
+				property.OneOf = nil
 			}
 
 			// For example:
