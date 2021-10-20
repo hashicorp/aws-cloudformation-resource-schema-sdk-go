@@ -207,6 +207,8 @@ func (r *Resource) ResolveWrappedOneOfProperties(property *Property) error {
 
 		property.OneOf = nil
 		property.Properties = unwrappedProperties
+		typ := Type(PropertyTypeObject)
+		property.Type = &typ
 	}
 
 	return nil
