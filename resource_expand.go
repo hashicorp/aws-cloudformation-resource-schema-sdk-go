@@ -13,13 +13,13 @@ func (r *Resource) Expand() error {
 		return nil
 	}
 
-	err := r.ResolveProperties(r.Definitions, []string{"definitions"})
+	err := r.ResolveProperties(r.Definitions)
 
 	if err != nil {
 		return fmt.Errorf("error expanding Resource (%s) Definitions: %w", *r.TypeName, err)
 	}
 
-	err = r.ResolveProperties(r.Properties, []string{"properties"})
+	err = r.ResolveProperties(r.Properties)
 
 	if err != nil {
 		return fmt.Errorf("error expanding Resource (%s) Properties: %w", *r.TypeName, err)
@@ -31,7 +31,7 @@ func (r *Resource) Expand() error {
 // ResolveProperties resolves all References in a top-level name-to-property map.
 // In theory unresolved form nested properties are not allowed but in practice they do occur,
 // so support arbitrarily deeply nested references.
-func (r *Resource) ResolveProperties(properties map[string]*Property, path []string) error {
+func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 	for propertyName, property := range properties {
 		// For example:
 		// "Configuration": {
@@ -63,7 +63,7 @@ func (r *Resource) ResolveProperties(properties map[string]*Property, path []str
 			}
 
 		case PropertyTypeObject:
-			err = r.ResolveWrappedOneOfProperties(property, append(path, propertyName))
+			err = r.ResolveWrappedOneOfProperties(property)
 
 			if err != nil {
 				return fmt.Errorf("error unwrapping %s OneOf Properties: %w", propertyName, err)
@@ -78,7 +78,7 @@ func (r *Resource) ResolveProperties(properties map[string]*Property, path []str
 			//     }
 			//   }
 			// },
-			err = r.ResolveProperties(property.Properties, append(path, propertyName))
+			err = r.ResolveProperties(property.Properties)
 
 			if err != nil {
 				return fmt.Errorf("error resolving %s Properties: %w", propertyName, err)
@@ -98,14 +98,14 @@ func (r *Resource) ResolveProperties(properties map[string]*Property, path []str
 			//     }
 			//   }
 			// },
-			err = r.ResolveProperties(property.PatternProperties, append(path, propertyName))
+			err = r.ResolveProperties(property.PatternProperties)
 
 			if err != nil {
 				return fmt.Errorf("error resolving %s PatternProperties: %w", propertyName, err)
 			}
 
 		case "":
-			err = r.ResolveWrappedOneOfProperties(property, append(path, propertyName))
+			err = r.ResolveWrappedOneOfProperties(property)
 
 			if err != nil {
 				return fmt.Errorf("error unwrapping %s OneOf Properties: %w", propertyName, err)
@@ -123,7 +123,7 @@ func (r *Resource) ResolveProperties(properties map[string]*Property, path []str
 				//     }
 				//   }
 				// },
-				err = r.ResolveProperties(property.Properties, append(path, propertyName))
+				err = r.ResolveProperties(property.Properties)
 
 				if err != nil {
 					return fmt.Errorf("error resolving %s Properties: %w", propertyName, err)
@@ -168,7 +168,7 @@ func (r *Resource) ResolveProperty(property *Property) (bool, error) {
 
 // ResolveWrappedOneOfProperties resolves any Reference (JSON Pointer) in a set of properties wrapped in OneOf.
 // Returns the unwrapped name-to-property map.
-func (r *Resource) ResolveWrappedOneOfProperties(property *Property, path []string) error {
+func (r *Resource) ResolveWrappedOneOfProperties(property *Property) error {
 	if len(property.Properties) == 0 && len(property.PatternProperties) == 0 && len(property.OneOf) > 0 {
 		// For example:
 		// "ContentTransformation": {
@@ -196,7 +196,7 @@ func (r *Resource) ResolveWrappedOneOfProperties(property *Property, path []stri
 				continue
 			}
 
-			if err := r.ResolveProperties(properties, append(path, "(oneOf)")); err != nil {
+			if err := r.ResolveProperties(properties); err != nil {
 				return err
 			}
 
