@@ -148,6 +148,12 @@ func (r *Resource) ResolveProperty(property *Property) (bool, error) {
 			return false, err
 		}
 
+		err = r.ResolveWrappedOneOfProperties(resolution)
+
+		if err != nil {
+			return false, err
+		}
+
 		*property = *resolution
 
 		// Ensure that any default value is not lost.
@@ -190,17 +196,7 @@ func (r *Resource) ResolveWrappedOneOfProperties(property *Property) error {
 		unwrappedProperties := make(map[string]*Property)
 
 		for _, propertySubschema := range property.OneOf {
-			properties := propertySubschema.Properties
-
-			if len(properties) == 0 {
-				continue
-			}
-
-			if err := r.ResolveProperties(properties); err != nil {
-				return err
-			}
-
-			for propertyName, property := range properties {
+			for propertyName, property := range propertySubschema.Properties {
 				unwrappedProperties[propertyName] = property
 			}
 		}
