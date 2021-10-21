@@ -63,7 +63,7 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 			}
 
 		case PropertyTypeObject:
-			err = r.ResolveWrappedOneOfProperties(property)
+			err = r.UnwrapOneOfProperties(property)
 
 			if err != nil {
 				return fmt.Errorf("error unwrapping %s OneOf Properties: %w", propertyName, err)
@@ -105,7 +105,7 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 			}
 
 		case "":
-			err = r.ResolveWrappedOneOfProperties(property)
+			err = r.UnwrapOneOfProperties(property)
 
 			if err != nil {
 				return fmt.Errorf("error unwrapping %s OneOf Properties: %w", propertyName, err)
@@ -148,7 +148,7 @@ func (r *Resource) ResolveProperty(property *Property) (bool, error) {
 			return false, err
 		}
 
-		err = r.ResolveWrappedOneOfProperties(resolution)
+		err = r.UnwrapOneOfProperties(resolution)
 
 		if err != nil {
 			return false, err
@@ -172,9 +172,8 @@ func (r *Resource) ResolveProperty(property *Property) (bool, error) {
 	return false, nil
 }
 
-// ResolveWrappedOneOfProperties resolves any Reference (JSON Pointer) in a set of properties wrapped in OneOf.
-// Returns the unwrapped name-to-property map.
-func (r *Resource) ResolveWrappedOneOfProperties(property *Property) error {
+// UnwrapOneOfProperties unwraps a set of properties nested in a oneOf element.
+func (r *Resource) UnwrapOneOfProperties(property *Property) error {
 	if len(property.Properties) == 0 && len(property.PatternProperties) == 0 && len(property.OneOf) > 0 {
 		// For example:
 		// "ContentTransformation": {
