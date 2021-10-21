@@ -325,6 +325,27 @@ func TestResourceExpand_SecondLevelNestedDefinition(t *testing.T) {
 			PropertyPath:         []string{"Distributions", "ContainerDistributionConfiguration", "TargetRepository", "RepositoryName"},
 			ExpectedPropertyType: cfschema.PropertyTypeString,
 		},
+		{
+			TestDescription:      "unwrap oneOf type object, single entry with ref",
+			MetaSchemaPath:       "provider.definition.schema.v1.json",
+			ResourceSchemaPath:   "AWS_S3ObjectLambda_AccessPoint.json",
+			PropertyPath:         []string{"ObjectLambdaConfiguration", "TransformationConfigurations", "ContentTransformation", "AwsLambda", "FunctionArn"},
+			ExpectedPropertyType: cfschema.PropertyTypeString,
+		},
+		{
+			TestDescription:      "unwrap oneOf type empty, single entry with refs",
+			MetaSchemaPath:       "provider.definition.schema.v1.json",
+			ResourceSchemaPath:   "AWS_S3Outposts_Bucket.json",
+			PropertyPath:         []string{"LifecycleConfiguration", "Rules", "Filter", "AndOperator", "Prefix"},
+			ExpectedPropertyType: cfschema.PropertyTypeString,
+		},
+		{
+			TestDescription:      "unwrap oneOf type object, multiple entries with refs",
+			MetaSchemaPath:       "provider.definition.schema.v1.json",
+			ResourceSchemaPath:   "AWS_S3_StorageLens.json",
+			PropertyPath:         []string{"StorageLensConfiguration", "DataExport", "S3BucketDestination", "Encryption", "SSEKMS", "KeyId"},
+			ExpectedPropertyType: cfschema.PropertyTypeString,
+		},
 	}
 
 	for _, testCase := range testCases {

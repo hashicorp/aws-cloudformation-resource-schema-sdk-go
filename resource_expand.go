@@ -63,6 +63,12 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 			}
 
 		case PropertyTypeObject:
+			err = r.UnwrapOneOfProperties(property)
+
+			if err != nil {
+				return fmt.Errorf("error unwrapping %s OneOf Properties: %w", propertyName, err)
+			}
+
 			// For example:
 			// "ClusterConfiguration": {
 			//   "type": "object",
@@ -99,6 +105,12 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 			}
 
 		case "":
+			err = r.UnwrapOneOfProperties(property)
+
+			if err != nil {
+				return fmt.Errorf("error unwrapping %s OneOf Properties: %w", propertyName, err)
+			}
+
 			if len(property.Properties) > 0 {
 				// For example:
 				// "PresignedUrlConfig": {
@@ -136,6 +148,12 @@ func (r *Resource) ResolveProperty(property *Property) (bool, error) {
 			return false, err
 		}
 
+		err = r.UnwrapOneOfProperties(resolution)
+
+		if err != nil {
+			return false, err
+		}
+
 		*property = *resolution
 
 		// Ensure that any default value is not lost.
@@ -152,4 +170,41 @@ func (r *Resource) ResolveProperty(property *Property) (bool, error) {
 	}
 
 	return false, nil
+}
+
+// UnwrapOneOfProperties unwraps a set of properties nested in a oneOf element.
+func (r *Resource) UnwrapOneOfProperties(property *Property) error {
+	if len(property.Properties) == 0 && len(property.PatternProperties) == 0 && len(property.OneOf) > 0 {
+		// For example:
+		// "ContentTransformation": {
+		//   "type": "object",
+		//   "oneOf": [
+		//     {
+		//       "additionalProperties": false,
+		//       "properties": {
+		//         "AwsLambda": {
+		//           "$ref": "#/definitions/AwsLambda"
+		//         }
+		//       },
+		//       "required": [
+		//         "AwsLambda"
+		//       ]
+		//     }
+		//   ]
+		// },
+		unwrappedProperties := make(map[string]*Property)
+
+		for _, propertySubschema := range property.OneOf {
+			for propertyName, property := range propertySubschema.Properties {
+				unwrappedProperties[propertyName] = property
+			}
+		}
+
+		property.OneOf = nil
+		property.Properties = unwrappedProperties
+		typ := Type(PropertyTypeObject)
+		property.Type = &typ
+	}
+
+	return nil
 }

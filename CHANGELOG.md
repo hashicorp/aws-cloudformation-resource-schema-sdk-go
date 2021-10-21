@@ -1,5 +1,7 @@
 ## v0.14.0 (Unreleased)
 
+Expand properties wrapped inside `oneOf`.
+
 ## v0.13.0 (October 12, 2021)
 
 Allow arbitrary levels of nesting when expanding Definition and Property JSON Pointer references.
