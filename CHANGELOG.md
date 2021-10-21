@@ -1,4 +1,4 @@
-## v0.14.0 (Unreleased)
+## v0.14.0 (October 21, 2021)
 
 Expand properties wrapped inside `oneOf`.
 
