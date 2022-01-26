@@ -346,6 +346,13 @@ func TestResourceExpand_SecondLevelNestedDefinition(t *testing.T) {
 			PropertyPath:         []string{"StorageLensConfiguration", "DataExport", "S3BucketDestination", "Encryption", "SSEKMS", "KeyId"},
 			ExpectedPropertyType: cfschema.PropertyTypeString,
 		},
+		{
+			TestDescription:      "valid 2 level array of objects",
+			MetaSchemaPath:       "provider.definition.schema.v1.json",
+			ResourceSchemaPath:   "AWS_Forecast_Dataset.json",
+			PropertyPath:         []string{"Tags", "Key"},
+			ExpectedPropertyType: cfschema.PropertyTypeString,
+		},
 	}
 
 	for _, testCase := range testCases {
