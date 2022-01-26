@@ -1,4 +1,4 @@
-## v0.15.0 (Unreleased)
+## v0.15.0 (January 26, 2022)
 
 Expand properties in arrays of objects.
 
