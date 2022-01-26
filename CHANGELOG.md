@@ -1,5 +1,7 @@
 ## v0.15.0 (Unreleased)
 
+Expand properties in arrays of objects.
+
 ## v0.14.0 (October 21, 2021)
 
 Expand properties wrapped inside `oneOf`.
