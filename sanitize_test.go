@@ -50,7 +50,7 @@ func TestSanitize(t *testing.T) {
   "KmsKeyId": {
     "description": "The Amazon Resource Name (ARN) of the CMK to use when encrypting log data.",
     "type": "string",
-    "pattern": "^arn:[a-z0-9-]+:kms:[a-z0-9-]+:\\d{12}:(key|alias)/.+\\Z",
+    "pattern":"^arn:[a-z0-9-]+:kms:[a-z0-9-]+:\\d{12}:(key|alias)/.+\\Z",
     "maxLength": 256
   },
   "Key" : {
@@ -60,6 +60,24 @@ func TestSanitize(t *testing.T) {
     "minLength" : 1,
     "maxLength" : 128
   },
+  "VirtualMfaDeviceName": {
+    "minLength": 1,
+    "maxLength": 226,
+    "pattern": "[\\w+=,.@-]+",
+    "type": "string"
+  },
+  "Path": {
+    "minLength": 1,
+    "maxLength": 512,
+    "pattern": "(\\u002F)|(\\u002F[\\u0021-\\u007F]+\\u002F)",
+    "type": "string"
+  },
+  "SerialNumber": {
+    "minLength": 9,
+    "maxLength": 256,
+    "pattern": "[\\w+=/:,.@-]+",
+    "type": "string"
+  }
 }
 			`,
 			SanitizedDocument: `
@@ -69,12 +87,12 @@ func TestSanitize(t *testing.T) {
     "type": "string",
     "minLength": 1,
     "maxLength": 512,
-    "pattern": "^[.\\-_/#A-Za-z0-9]{1,512}\\Z"
+    "pattern": ""
   },
   "KmsKeyId": {
     "description": "The Amazon Resource Name (ARN) of the CMK to use when encrypting log data.",
     "type": "string",
-    "pattern": "^arn:[a-z0-9-]+:kms:[a-z0-9-]+:\\d{12}:(key|alias)/.+\\Z",
+    "pattern":"",
     "maxLength": 256
   },
   "Key" : {
@@ -84,6 +102,24 @@ func TestSanitize(t *testing.T) {
     "minLength" : 1,
     "maxLength" : 128
   },
+  "VirtualMfaDeviceName": {
+    "minLength": 1,
+    "maxLength": 226,
+    "pattern": "[\\w+=,.@-]+",
+    "type": "string"
+  },
+  "Path": {
+    "minLength": 1,
+    "maxLength": 512,
+    "pattern": "",
+    "type": "string"
+  },
+  "SerialNumber": {
+    "minLength": 9,
+    "maxLength": 256,
+    "pattern": "[\\w+=/:,.@-]+",
+    "type": "string"
+  }
 }
 			`,
 		},

@@ -2,6 +2,7 @@ package cfschema
 
 import (
 	"bufio"
+	"encoding/json"
 	"regexp"
 	"strings"
 )
@@ -43,6 +44,14 @@ func Sanitize(document string) (string, error) {
 }
 
 func isSupportedRegexp(expr string) bool {
-	_, err := regexp.Compile(expr)
+	// github.com/xeipuuv/gojsonschema attempts to compile the regex after it has been unmarshaled from JSON.
+	var v string
+	b := []byte("\"" + expr + "\"")
+
+	if err := json.Unmarshal(b, &v); err != nil {
+		return false
+	}
+
+	_, err := regexp.Compile(v)
 	return err == nil
 }
