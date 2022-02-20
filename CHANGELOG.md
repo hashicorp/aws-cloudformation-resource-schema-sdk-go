@@ -1,4 +1,4 @@
-## v0.16.0 (Unreleased)
+## v0.16.0 (February 20, 2022)
 
 `Santize` now only removes property `pattern` regexes not supported by Go.
 
