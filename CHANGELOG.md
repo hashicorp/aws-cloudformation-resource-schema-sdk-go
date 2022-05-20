@@ -1,3 +1,7 @@
+## v0.17.0 (Unreleased)
+
+Add helper to `propertyTransform` to get values based on path.
+
 ## v0.16.0 (February 20, 2022)
 
 `Santize` now only removes property `pattern` regexes not supported by Go.
