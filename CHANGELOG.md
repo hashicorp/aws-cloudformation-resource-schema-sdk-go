@@ -1,4 +1,4 @@
-## v0.17.0 (Unreleased)
+## v0.17.0 (May 20, 2022)
 
 Add helper to `propertyTransform` to get values based on path.
 
