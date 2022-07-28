@@ -47,10 +47,10 @@ type Property struct {
 	Format               *string              `json:"format,omitempty"`
 	InsertionOrder       *bool                `json:"insertionOrder,omitempty"`
 	Items                *Property            `json:"items,omitempty"`
-	Maximum              *int                 `json:"maximum,omitempty"`
+	Maximum              *int64               `json:"maximum,omitempty"`
 	MaxItems             *int                 `json:"maxItems,omitempty"`
 	MaxLength            *int                 `json:"maxLength,omitempty"`
-	Minimum              *int                 `json:"minimum,omitempty"`
+	Minimum              *int64               `json:"minimum,omitempty"`
 	MinItems             *int                 `json:"minItems,omitempty"`
 	MinLength            *int                 `json:"minLength,omitempty"`
 	OneOf                []*PropertySubschema `json:"oneOf,omitempty"`
