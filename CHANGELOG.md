@@ -1,3 +1,7 @@
+## v0.18.0 (July 28, 2022)
+
+`Property.Maximum` and `Property.Minimum` changed to type (pointer to) `json.Number`.
+
 ## v0.17.0 (May 20, 2022)
 
 Add helper to `propertyTransform` to get values based on path.
