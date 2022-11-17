@@ -22,7 +22,7 @@ func TestSanitize(t *testing.T) {
     "type": "string",
     "minLength": 1,
     "maxLength": 512
-  },
+  }
 }
 			`,
 			SanitizedDocument: `
@@ -32,7 +32,7 @@ func TestSanitize(t *testing.T) {
     "type": "string",
     "minLength": 1,
     "maxLength": 512
-  },
+  }
 }
 			`,
 		},
@@ -92,15 +92,15 @@ func TestSanitize(t *testing.T) {
   "KmsKeyId": {
     "description": "The Amazon Resource Name (ARN) of the CMK to use when encrypting log data.",
     "type": "string",
-    "pattern":"",
+    "pattern": "",
     "maxLength": 256
   },
-  "Key" : {
-    "type" : "string",
-    "pattern" : "",
-    "description" : "The key name of the tag. You can specify a value that is 1 to 128 Unicode characters in length and cannot be prefixed with aws:. You can use any of the following characters: the set of Unicode letters, digits, whitespace, _, ., /, =, +, and -.",
-    "minLength" : 1,
-    "maxLength" : 128
+  "Key": {
+    "type": "string",
+    "pattern": "",
+    "description": "The key name of the tag. You can specify a value that is 1 to 128 Unicode characters in length and cannot be prefixed with aws:. You can use any of the following characters: the set of Unicode letters, digits, whitespace, _, ., /, =, +, and -.",
+    "minLength": 1,
+    "maxLength": 128
   },
   "VirtualMfaDeviceName": {
     "minLength": 1,
@@ -164,8 +164,54 @@ func TestSanitize(t *testing.T) {
       "": {
         "type": "string"
       },
-    "additionalProperties": false
+      "additionalProperties": false
     }
+  }
+}
+			`,
+		},
+		{
+			TestDescription: "Sanitize unindented JSON",
+			InputDocument:   `{"LogGroupName":{"description":"The name of the log group. If you don't specify a name, AWS CloudFormation generates a unique ID for the log group.","type":"string","minLength":1,"maxLength":512,"pattern":"^[.\\-_/#A-Za-z0-9]{1,512}\\Z"},"KmsKeyId":{"description":"The Amazon Resource Name (ARN) of the CMK to use when encrypting log data.","type":"string","pattern":"^arn:[a-z0-9-]+:kms:[a-z0-9-]+:\\d{12}:(key|alias)/.+\\Z","maxLength":256},"Key":{"type":"string","pattern":"^(?!aws:)[a-zA-Z+-=._:/]+$","description":"The key name of the tag. You can specify a value that is 1 to 128 Unicode characters in length and cannot be prefixed with aws:. You can use any of the following characters: the set of Unicode letters, digits, whitespace, _, ., /, =, +, and -.","minLength":1,"maxLength":128},"VirtualMfaDeviceName":{"minLength":1,"maxLength":226,"pattern":"[\\w+=,.@-]+","type":"string"},"Path":{"minLength":1,"maxLength":512,"pattern":"(\\u002F)|(\\u002F[\\u0021-\\u007F]+\\u002F)","type":"string"},"SerialNumber":{"minLength":9,"maxLength":256,"pattern":"[\\w+=/:,.@-]+","type":"string"}}`,
+			SanitizedDocument: `
+{
+  "LogGroupName": {
+    "description": "The name of the log group. If you don't specify a name, AWS CloudFormation generates a unique ID for the log group.",
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 512,
+    "pattern": ""
+  },
+  "KmsKeyId": {
+    "description": "The Amazon Resource Name (ARN) of the CMK to use when encrypting log data.",
+    "type": "string",
+    "pattern": "",
+    "maxLength": 256
+  },
+  "Key": {
+    "type": "string",
+    "pattern": "",
+    "description": "The key name of the tag. You can specify a value that is 1 to 128 Unicode characters in length and cannot be prefixed with aws:. You can use any of the following characters: the set of Unicode letters, digits, whitespace, _, ., /, =, +, and -.",
+    "minLength": 1,
+    "maxLength": 128
+  },
+  "VirtualMfaDeviceName": {
+    "minLength": 1,
+    "maxLength": 226,
+    "pattern": "[\\w+=,.@-]+",
+    "type": "string"
+  },
+  "Path": {
+    "minLength": 1,
+    "maxLength": 512,
+    "pattern": "",
+    "type": "string"
+  },
+  "SerialNumber": {
+    "minLength": 9,
+    "maxLength": 256,
+    "pattern": "[\\w+=/:,.@-]+",
+    "type": "string"
   }
 }
 			`,
