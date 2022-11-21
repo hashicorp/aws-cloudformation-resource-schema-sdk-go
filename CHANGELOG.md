@@ -1,3 +1,7 @@
+## v0.19.0 (Unreleased)
+
+The `Sanitize` function formats the JSON document using [`json.Indent`](https://pkg.go.dev/encoding/json#Indent) before sanitizing.
+
 ## v0.18.0 (July 28, 2022)
 
 `Property.Maximum` and `Property.Minimum` changed to type (pointer to) `json.Number`.
