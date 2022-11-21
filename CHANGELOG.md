@@ -1,4 +1,4 @@
-## v0.19.0 (Unreleased)
+## v0.19.0 (November 21, 2022)
 
 The `Sanitize` function formats the JSON document using [`json.Indent`](https://pkg.go.dev/encoding/json#Indent) before sanitizing.
 
