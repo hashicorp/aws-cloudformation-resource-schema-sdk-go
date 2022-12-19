@@ -1,4 +1,4 @@
-## v0.20.0 (Unreleased)
+## v0.20.0 (December 19, 2022)
 
 Support [`arrayType`](https://github.com/aws-cloudformation/cloudformation-resource-schema#arraytype).
 
