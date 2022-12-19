@@ -1,3 +1,7 @@
+## v0.20.0 (Unreleased)
+
+Support [`arrayType`](https://github.com/aws-cloudformation/cloudformation-resource-schema#arraytype).
+
 ## v0.19.0 (November 21, 2022)
 
 The `Sanitize` function formats the JSON document using [`json.Indent`](https://pkg.go.dev/encoding/json#Indent) before sanitizing.
