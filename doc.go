@@ -1,3 +1,6 @@
+// Copyright (c) HashiCorp, Inc.
+// SPDX-License-Identifier: MPL-2.0
+
 // aws-cloudformation-resource-schema-sdk-go handles CloudFormation Resource Providers Schema functionality in Go.
 //
 // This includes, but is not limited to, wrapping JSON Schema library usage,
