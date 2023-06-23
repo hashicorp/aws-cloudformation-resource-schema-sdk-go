@@ -1,4 +1,4 @@
-## v0.21.0 (Unreleased)
+## v0.21.0 (June 23, 2023)
 
 Support [`handlers.handlerSchema`](https://github.com/aws-cloudformation/cloudformation-resource-schema#handlers).
 
