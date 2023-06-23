@@ -1,3 +1,7 @@
+## v0.21.0 (Unreleased)
+
+Support [`handlers.handlerSchema`](https://github.com/aws-cloudformation/cloudformation-resource-schema#handlers).
+
 ## v0.20.0 (December 19, 2022)
 
 Support [`arrayType`](https://github.com/aws-cloudformation/cloudformation-resource-schema#arraytype).

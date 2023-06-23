@@ -9,4 +9,5 @@ type Tagging struct {
 	TagUpdatable             *bool                `json:"tagUpdatable,omitempty"`
 	CloudFormationSystemTags *bool                `json:"cloudFormationSystemTags,omitempty"`
 	TagProperty              *PropertyJsonPointer `json:"tagProperty,omitempty"`
+	Permissions              []string             `json:"permissions,omitempty"`
 }
