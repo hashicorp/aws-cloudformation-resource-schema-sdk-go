@@ -18,6 +18,8 @@ type Resource struct {
 	DeprecatedProperties            PropertyJsonPointers   `json:"deprecatedProperties,omitempty"`
 	Description                     *string                `json:"description,omitempty"`
 	Handlers                        map[string]*Handler    `json:"handlers,omitempty"`
+	NonPublicDefinitions            PropertyJsonPointers   `json:"nonPublicDefinitions,omitempty"`
+	NonPublicProperties             PropertyJsonPointers   `json:"nonPublicProperties,omitempty"`
 	OneOf                           []*PropertySubschema   `json:"oneOf,omitempty"`
 	PrimaryIdentifier               PropertyJsonPointers   `json:"primaryIdentifier,omitempty"`
 	Properties                      map[string]*Property   `json:"properties,omitempty"`

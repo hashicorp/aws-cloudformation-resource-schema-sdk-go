@@ -12,6 +12,7 @@ const (
 )
 
 type Handler struct {
-	Permissions      []string `json:"permissions,omitempty"`
-	TimeoutInMinutes int      `json:"timeoutInMinutes,omitempty"`
+	HandlerSchema    *HandlerSchema `json:"handlerSchema,omitempty"`
+	Permissions      []string       `json:"permissions,omitempty"`
+	TimeoutInMinutes int            `json:"timeoutInMinutes,omitempty"`
 }
