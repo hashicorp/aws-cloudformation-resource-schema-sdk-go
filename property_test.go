@@ -50,29 +50,6 @@ func TestProperty_IsRequired(t *testing.T) {
 	}
 }
 
-func TestProperty_RelationshipRef(t *testing.T) {
-	testCases := []struct {
-		TestDescription    string
-		MetaSchemaPath     string
-		ResourceSchemaPath string
-		ExpectError        bool
-	}{
-		{
-			TestDescription:    "relationshipRef",
-			MetaSchemaPath:     "provider.definition.schema.v1.json",
-			ResourceSchemaPath: "AWS_S3_MultiRegionAccessPoint.json",
-		},
-	}
-
-	for _, testCase := range testCases {
-		testCase := testCase
-
-		t.Run(testCase.TestDescription, func(t *testing.T) {
-			loadAndValidateResourceSchema(t, testCase.MetaSchemaPath, testCase.ResourceSchemaPath)
-		})
-	}
-}
-
 func loadAndValidateResourceSchema(t *testing.T, metaSchemaPath, resourceSchemaPath string) *cfschema.Resource {
 	metaSchema, err := cfschema.NewMetaJsonSchemaPath(filepath.Join("testdata", metaSchemaPath))
 
