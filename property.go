@@ -44,32 +44,33 @@ const (
 
 // Property represents the CloudFormation Resource Schema customization for Definitions and Properties.
 type Property struct {
-	AdditionalProperties *bool                `json:"additionalProperties,omitempty"`
-	AllOf                []*PropertySubschema `json:"allOf,omitempty"`
-	AnyOf                []*PropertySubschema `json:"anyOf,omitempty"`
-	ArrayType            *string              `json:"arrayType,omitempty"`
-	Comment              *string              `json:"$comment,omitempty"`
-	Default              interface{}          `json:"default,omitempty"`
-	Description          *string              `json:"description,omitempty"`
-	Enum                 []interface{}        `json:"enum,omitempty"`
-	Examples             []interface{}        `json:"examples,omitempty"`
-	Format               *string              `json:"format,omitempty"`
-	InsertionOrder       *bool                `json:"insertionOrder,omitempty"`
-	Items                *Property            `json:"items,omitempty"`
-	Maximum              *json.Number         `json:"maximum,omitempty"`
-	MaxItems             *int                 `json:"maxItems,omitempty"`
-	MaxLength            *int                 `json:"maxLength,omitempty"`
-	Minimum              *json.Number         `json:"minimum,omitempty"`
-	MinItems             *int                 `json:"minItems,omitempty"`
-	MinLength            *int                 `json:"minLength,omitempty"`
-	OneOf                []*PropertySubschema `json:"oneOf,omitempty"`
-	Pattern              *string              `json:"pattern,omitempty"`
-	PatternProperties    map[string]*Property `json:"patternProperties,omitempty"`
-	Properties           map[string]*Property `json:"properties,omitempty"`
-	Ref                  *Reference           `json:"$ref,omitempty"`
-	Required             []string             `json:"required,omitempty"`
-	Type                 *Type                `json:"type,omitempty"`
-	UniqueItems          *bool                `json:"uniqueItems,omitempty"`
+	AdditionalProperties *bool                    `json:"additionalProperties,omitempty"`
+	AllOf                []*PropertySubschema     `json:"allOf,omitempty"`
+	AnyOf                []*PropertySubschema     `json:"anyOf,omitempty"`
+	ArrayType            *string                  `json:"arrayType,omitempty"`
+	Comment              *string                  `json:"$comment,omitempty"`
+	Default              interface{}              `json:"default,omitempty"`
+	Description          *string                  `json:"description,omitempty"`
+	Enum                 []interface{}            `json:"enum,omitempty"`
+	Examples             []interface{}            `json:"examples,omitempty"`
+	Format               *string                  `json:"format,omitempty"`
+	InsertionOrder       *bool                    `json:"insertionOrder,omitempty"`
+	Items                *Property                `json:"items,omitempty"`
+	Maximum              *json.Number             `json:"maximum,omitempty"`
+	MaxItems             *int                     `json:"maxItems,omitempty"`
+	MaxLength            *int                     `json:"maxLength,omitempty"`
+	Minimum              *json.Number             `json:"minimum,omitempty"`
+	MinItems             *int                     `json:"minItems,omitempty"`
+	MinLength            *int                     `json:"minLength,omitempty"`
+	OneOf                []*PropertySubschema     `json:"oneOf,omitempty"`
+	Pattern              *string                  `json:"pattern,omitempty"`
+	PatternProperties    map[string]*Property     `json:"patternProperties,omitempty"`
+	Properties           map[string]*Property     `json:"properties,omitempty"`
+	Ref                  *Reference               `json:"$ref,omitempty"`
+	RelationshipRef      *PropertyRelationshipRef `json:"relationshipRef,omitempty"`
+	Required             []string                 `json:"required,omitempty"`
+	Type                 *Type                    `json:"type,omitempty"`
+	UniqueItems          *bool                    `json:"uniqueItems,omitempty"`
 }
 
 // String returns a string representation of Property.

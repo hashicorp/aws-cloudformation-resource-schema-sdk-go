@@ -4,10 +4,7 @@
 package cfschema_test
 
 import (
-	"path/filepath"
 	"testing"
-
-	cfschema "github.com/hashicorp/aws-cloudformation-resource-schema-sdk-go"
 )
 
 func TestHandlerSchema(t *testing.T) {
@@ -35,29 +32,7 @@ func TestHandlerSchema(t *testing.T) {
 		testCase := testCase
 
 		t.Run(testCase.TestDescription, func(t *testing.T) {
-			metaSchema, err := cfschema.NewMetaJsonSchemaPath(filepath.Join("testdata", testCase.MetaSchemaPath))
-
-			if err != nil {
-				t.Fatalf("unexpected NewMetaJsonSchemaPath() error: %s", err)
-			}
-
-			resourceSchema, err := cfschema.NewResourceJsonSchemaPath(filepath.Join("testdata", testCase.ResourceSchemaPath))
-
-			if err != nil {
-				t.Fatalf("unexpected NewResourceJsonSchemaPath() error: %s", err)
-			}
-
-			err = metaSchema.ValidateResourceJsonSchema(resourceSchema)
-
-			if err != nil {
-				t.Fatalf("unexpected ValidateResourceJsonSchema() error: %s", err)
-			}
-
-			resource, err := resourceSchema.Resource()
-
-			if err != nil {
-				t.Fatalf("unexpected Resource() error: %s", err)
-			}
+			resource := loadAndValidateResourceSchema(t, testCase.MetaSchemaPath, testCase.ResourceSchemaPath)
 
 			got := 0
 
