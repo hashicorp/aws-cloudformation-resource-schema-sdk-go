@@ -64,8 +64,6 @@ func TestProperty_RelationshipRef(t *testing.T) {
 		},
 	}
 
-	t.Skip("relationshipRef is not yet implemented")
-
 	for _, testCase := range testCases {
 		testCase := testCase
 
