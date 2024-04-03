@@ -1,3 +1,8 @@
+## v0.22.0 (April 3, 2024)
+
+Support `relationshipRef`.
+Require Go 1.21.
+
 ## v0.21.0 (June 23, 2023)
 
 Support [`handlers.handlerSchema`](https://github.com/aws-cloudformation/cloudformation-resource-schema#handlers).
