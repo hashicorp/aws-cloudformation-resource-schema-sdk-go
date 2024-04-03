@@ -4,11 +4,11 @@
 package cfschema
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 
-	"github.com/hashicorp/go-multierror"
 	"github.com/xeipuuv/gojsonschema"
 )
 
@@ -44,17 +44,17 @@ func (s *jsonSchema) validate(loader gojsonschema.JSONLoader) error {
 	result, err := s.schema.Validate(loader)
 
 	if err != nil {
-		return fmt.Errorf("Unable to Validate JSON Schema: %w", err)
+		return fmt.Errorf("validating JSON Schema: %w", err)
 	}
 
 	if !result.Valid() {
-		var errs *multierror.Error
+		var errs []error
 
 		for _, resultError := range result.Errors() {
-			errs = multierror.Append(errs, fmt.Errorf("%s", resultError.String()))
+			errs = append(errs, errors.New(resultError.String()))
 		}
 
-		return fmt.Errorf("Validation Errors: %w", errs)
+		return fmt.Errorf("validation errors: %w", errors.Join(errs...))
 	}
 
 	return nil
