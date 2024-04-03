@@ -1,6 +1,6 @@
 module github.com/hashicorp/aws-cloudformation-resource-schema-sdk-go
 
-go 1.18
+go 1.21
 
 require (
 	github.com/hashicorp/go-multierror v1.1.1
