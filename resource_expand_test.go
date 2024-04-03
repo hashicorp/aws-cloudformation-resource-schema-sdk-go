@@ -4,7 +4,6 @@
 package cfschema_test
 
 import (
-	"path/filepath"
 	"testing"
 
 	cfschema "github.com/hashicorp/aws-cloudformation-resource-schema-sdk-go"
@@ -35,31 +34,9 @@ func TestResourceExpand(t *testing.T) {
 		testCase := testCase
 
 		t.Run(testCase.TestDescription, func(t *testing.T) {
-			metaSchema, err := cfschema.NewMetaJsonSchemaPath(filepath.Join("testdata", testCase.MetaSchemaPath))
+			resource := loadAndValidateResourceSchema(t, testCase.MetaSchemaPath, testCase.ResourceSchemaPath)
 
-			if err != nil {
-				t.Fatalf("unexpected NewMetaJsonSchemaPath() error: %s", err)
-			}
-
-			resourceSchema, err := cfschema.NewResourceJsonSchemaPath(filepath.Join("testdata", testCase.ResourceSchemaPath))
-
-			if err != nil {
-				t.Fatalf("unexpected NewResourceJsonSchemaPath() error: %s", err)
-			}
-
-			err = metaSchema.ValidateResourceJsonSchema(resourceSchema)
-
-			if err != nil {
-				t.Fatalf("unexpected ValidateResourceJsonSchema() error: %s", err)
-			}
-
-			resource, err := resourceSchema.Resource()
-
-			if err != nil {
-				t.Fatalf("unexpected Resource() error: %s", err)
-			}
-
-			err = resource.Expand()
+			err := resource.Expand()
 
 			if err != nil && !testCase.ExpectError {
 				t.Fatalf("unexpected error: %s", err)
@@ -126,31 +103,9 @@ func TestResourceExpand_NestedDefinition(t *testing.T) {
 		testCase := testCase
 
 		t.Run(testCase.TestDescription, func(t *testing.T) {
-			metaSchema, err := cfschema.NewMetaJsonSchemaPath(filepath.Join("testdata", testCase.MetaSchemaPath))
+			resource := loadAndValidateResourceSchema(t, testCase.MetaSchemaPath, testCase.ResourceSchemaPath)
 
-			if err != nil {
-				t.Fatalf("unexpected NewMetaJsonSchemaPath() error: %s", err)
-			}
-
-			resourceSchema, err := cfschema.NewResourceJsonSchemaPath(filepath.Join("testdata", testCase.ResourceSchemaPath))
-
-			if err != nil {
-				t.Fatalf("unexpected NewResourceJsonSchemaPath() error: %s", err)
-			}
-
-			err = metaSchema.ValidateResourceJsonSchema(resourceSchema)
-
-			if err != nil {
-				t.Fatalf("unexpected ValidateResourceJsonSchema() error: %s", err)
-			}
-
-			resource, err := resourceSchema.Resource()
-
-			if err != nil {
-				t.Fatalf("unexpected Resource() error: %s", err)
-			}
-
-			err = resource.Expand()
+			err := resource.Expand()
 
 			if err != nil && !testCase.ExpectError {
 				t.Fatalf("unexpected error: %s", err)
@@ -218,31 +173,9 @@ func TestResourceExpand_PatternProperties(t *testing.T) {
 		testCase := testCase
 
 		t.Run(testCase.TestDescription, func(t *testing.T) {
-			metaSchema, err := cfschema.NewMetaJsonSchemaPath(filepath.Join("testdata", testCase.MetaSchemaPath))
+			resource := loadAndValidateResourceSchema(t, testCase.MetaSchemaPath, testCase.ResourceSchemaPath)
 
-			if err != nil {
-				t.Fatalf("unexpected NewMetaJsonSchemaPath() error: %s", err)
-			}
-
-			resourceSchema, err := cfschema.NewResourceJsonSchemaPath(filepath.Join("testdata", testCase.ResourceSchemaPath))
-
-			if err != nil {
-				t.Fatalf("unexpected NewResourceJsonSchemaPath() error: %s", err)
-			}
-
-			err = metaSchema.ValidateResourceJsonSchema(resourceSchema)
-
-			if err != nil {
-				t.Fatalf("unexpected ValidateResourceJsonSchema() error: %s", err)
-			}
-
-			resource, err := resourceSchema.Resource()
-
-			if err != nil {
-				t.Fatalf("unexpected Resource() error: %s", err)
-			}
-
-			err = resource.Expand()
+			err := resource.Expand()
 
 			if err != nil && !testCase.ExpectError {
 				t.Fatalf("unexpected error: %s", err)
@@ -362,31 +295,9 @@ func TestResourceExpand_SecondLevelNestedDefinition(t *testing.T) {
 		testCase := testCase
 
 		t.Run(testCase.TestDescription, func(t *testing.T) {
-			metaSchema, err := cfschema.NewMetaJsonSchemaPath(filepath.Join("testdata", testCase.MetaSchemaPath))
+			resource := loadAndValidateResourceSchema(t, testCase.MetaSchemaPath, testCase.ResourceSchemaPath)
 
-			if err != nil {
-				t.Fatalf("unexpected NewMetaJsonSchemaPath() error: %s", err)
-			}
-
-			resourceSchema, err := cfschema.NewResourceJsonSchemaPath(filepath.Join("testdata", testCase.ResourceSchemaPath))
-
-			if err != nil {
-				t.Fatalf("unexpected NewResourceJsonSchemaPath() error: %s", err)
-			}
-
-			err = metaSchema.ValidateResourceJsonSchema(resourceSchema)
-
-			if err != nil {
-				t.Fatalf("unexpected ValidateResourceJsonSchema() error: %s", err)
-			}
-
-			resource, err := resourceSchema.Resource()
-
-			if err != nil {
-				t.Fatalf("unexpected Resource() error: %s", err)
-			}
-
-			err = resource.Expand()
+			err := resource.Expand()
 
 			if err != nil && !testCase.ExpectError {
 				t.Fatalf("unexpected error: %s", err)
