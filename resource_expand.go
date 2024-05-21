@@ -37,9 +37,10 @@ func (r *Resource) Expand() error {
 func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 	for propertyName, property := range properties {
 		// For example:
+		//
 		// "Configuration": {
 		//   "$ref": "#/definitions/ClusterConfiguration"
-		// },
+		// }
 		resolved, err := r.ResolveProperty(property)
 
 		if err != nil {
@@ -53,12 +54,13 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 		switch property.Type.String() {
 		case PropertyTypeArray:
 			// For example:
+			//
 			// "DefaultCapacityProviderStrategy": {
 			//   "type": "array",
 			//   "items": {
 			//     "$ref": "#/definitions/CapacityProviderStrategyItem"
 			//   }
-			// },
+			// }
 			resolved, err = r.ResolveProperty(property.Items)
 
 			if err != nil {
@@ -71,6 +73,7 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 
 			if property.Items.Type.String() == PropertyTypeObject {
 				// For example:
+				//
 				// "Tags": {
 				// 	"type": "array",
 				// 	"items": {
@@ -88,7 +91,7 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 				}
 			}
 
-		case PropertyTypeObject:
+		case PropertyTypeObject, "":
 			err = r.UnwrapOneOfProperties(property)
 
 			if err != nil {
@@ -96,6 +99,7 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 			}
 
 			// For example:
+			//
 			// "ClusterConfiguration": {
 			//   "type": "object",
 			//   "properties": {
@@ -103,7 +107,21 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 			//       "$ref": "#/definitions/ExecuteCommandConfiguration"
 			//     }
 			//   }
-			// },
+			// }
+			//
+			// or
+			//
+			// "PresignedUrlConfig": {
+			//   "properties": {
+			//     "RoleArn": {
+			//       "$ref": "#/definitions/RoleArn"
+			//     },
+			//     "ExpiresInSec": {
+			//       "$ref": "#/definitions/ExpiresInSec"
+			//     }
+			//   }
+			// }
+
 			err = r.ResolveProperties(property.Properties)
 
 			if err != nil {
@@ -111,6 +129,7 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 			}
 
 			// For example:
+			//
 			// "LambdaFunctionRecipeSource": {
 			//   "type": "object",
 			//   "properties": {
@@ -123,37 +142,23 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 			//       }
 			//     }
 			//   }
-			// },
+			// }
+			//
+			// or
+			//
+			// "RouteParameters": {
+			// 	 "patternProperties": {
+			// 	   "": {
+			// 		 "$ref": "#/definitions/ParameterConstraints"
+			// 	   }
+			// 	 },
+			//   "additionalProperties": false
+			//  }
+
 			err = r.ResolveProperties(property.PatternProperties)
 
 			if err != nil {
 				return fmt.Errorf("resolving %s PatternProperties: %w", propertyName, err)
-			}
-
-		case "":
-			err = r.UnwrapOneOfProperties(property)
-
-			if err != nil {
-				return fmt.Errorf("unwrapping %s OneOf Properties: %w", propertyName, err)
-			}
-
-			if len(property.Properties) > 0 {
-				// For example:
-				// "PresignedUrlConfig": {
-				//   "properties": {
-				//     "RoleArn": {
-				//       "$ref": "#/definitions/RoleArn"
-				//     },
-				//     "ExpiresInSec": {
-				//       "$ref": "#/definitions/ExpiresInSec"
-				//     }
-				//   }
-				// },
-				err = r.ResolveProperties(property.Properties)
-
-				if err != nil {
-					return fmt.Errorf("resolving %s Properties: %w", propertyName, err)
-				}
 			}
 		}
 	}
@@ -202,6 +207,7 @@ func (r *Resource) ResolveProperty(property *Property) (bool, error) {
 func (r *Resource) UnwrapOneOfProperties(property *Property) error {
 	if len(property.Properties) == 0 && len(property.PatternProperties) == 0 && len(property.OneOf) > 0 {
 		// For example:
+		//
 		// "ContentTransformation": {
 		//   "type": "object",
 		//   "oneOf": [
@@ -217,7 +223,7 @@ func (r *Resource) UnwrapOneOfProperties(property *Property) error {
 		//       ]
 		//     }
 		//   ]
-		// },
+		// }
 		unwrappedProperties := make(map[string]*Property)
 
 		for _, propertySubschema := range property.OneOf {

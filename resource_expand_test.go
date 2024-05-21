@@ -167,6 +167,13 @@ func TestResourceExpand_PatternProperties(t *testing.T) {
 			PropertyPath:         []string{"LambdaFunction", "ComponentDependencies", "VersionRequirement"},
 			ExpectedPropertyType: cfschema.PropertyTypeString,
 		},
+		{
+			TestDescription:      "valid no type specified",
+			MetaSchemaPath:       "provider.definition.schema.v1.json",
+			ResourceSchemaPath:   "AWS_ApiGatewayV2_RouteResponse.json",
+			PropertyPath:         []string{"ResponseParameters", "Required"},
+			ExpectedPropertyType: cfschema.PropertyTypeBoolean,
+		},
 	}
 
 	for _, testCase := range testCases {
@@ -210,16 +217,17 @@ func TestResourceExpand_PatternProperties(t *testing.T) {
 					}
 				}
 
-				if property.Type == nil {
-					t.Fatalf("unexpected resource property (%s) type, got none", propertyName)
+				propertyType := cfschema.Type(cfschema.PropertyTypeObject)
+				if property.Type != nil {
+					propertyType = *property.Type
 				}
 
 				if i == len(testCase.PropertyPath)-1 {
-					if actual, expected := *property.Type, testCase.ExpectedPropertyType; actual != expected {
+					if actual, expected := propertyType, testCase.ExpectedPropertyType; actual != expected {
 						t.Errorf("expected resource property (%s) type (%s), got: %s", propertyName, expected, actual)
 					}
 				} else {
-					if actual, expected := *property.Type, cfschema.Type(cfschema.PropertyTypeObject); actual != expected {
+					if actual, expected := propertyType, cfschema.Type(cfschema.PropertyTypeObject); actual != expected {
 						t.Fatalf("expected resource property (%s) type (%s), got: %s", propertyName, expected, actual)
 					}
 
