@@ -1,3 +1,7 @@
+## v0.23.0 (May 21, 2024)
+
+Resolve patternProperty refs during resource expansion when the referenced definition has no type.
+
 ## v0.22.0 (April 3, 2024)
 
 Support `relationshipRef`.
