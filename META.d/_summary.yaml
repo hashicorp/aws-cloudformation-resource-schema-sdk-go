@@ -1,0 +1,14 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
+---
+schema: 1.1
+
+partition: tf-ecosystem
+
+summary:
+  owner: team-tf-aws
+  description: |
+    This package provides AWS CloudFormation Resource Schema functionality in Go, including the validation of schema documents, parsing of schema documents into native Go types, and offering methods for interacting with these schemas. This is used by both the aws/awscc Terraform providers.
+
+  visibility: external
