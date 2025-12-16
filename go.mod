@@ -1,6 +1,6 @@
 module github.com/hashicorp/aws-cloudformation-resource-schema-sdk-go
 
-go 1.21
+go 1.24.11
 
 require github.com/xeipuuv/gojsonschema v1.2.0
 

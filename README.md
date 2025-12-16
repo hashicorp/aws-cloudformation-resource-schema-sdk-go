@@ -4,13 +4,6 @@ This package provides [AWS CloudFormation Resource Schema](https://github.com/aw
 
 _NOTE: There is a separate [AWS CloudFormation resource specification](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-resource-specification.html), which is different than what is being described or handled in this package._
 
-To browse the documentation before it is published on https://pkg.go.dev, you can browse it locally via [`godoc`](https://pkg.go.dev/golang.org/x/tools/cmd/godoc):
-
-```shell
-godoc -http=":6060" &
-open "http://localhost:6060/pkg/github.com/hashicorp/aws-cloudformation-resource-schema-sdk-go"
-```
-
 ## Example Usage
 
 Adding Go Module dependency to your project:
@@ -69,6 +62,12 @@ Expanding a resource schema to replace JSON Pointer references:
 ```go
 err := resource.Expand()
 ```
+
+## Go Compatibility
+
+This project follows the [support policy](https://golang.org/doc/devel/release.html#policy) of Go as its support policy. The two latest major releases of Go are supported by the project.
+
+Currently, that means Go **1.24** or later must be used when including this project as a dependency.
 
 ## Further Reading
 
