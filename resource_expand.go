@@ -293,22 +293,22 @@ func (r *Resource) UnwrapAllOfProperties(property *Property) error {
 
 			// write properties if they exist
 			maps.Copy(unwrappedProperties, propertySubschema.Properties)
+		}
 
-			if ref.String() != "" {
-				property.AllOf = nil
-				property.Ref = &ref
+		if ref.String() != "" {
+			property.AllOf = nil
+			property.Ref = &ref
 
-				if defaultValue != nil {
-					property.Default = defaultValue
-					typ := defaultValuePropertyType(defaultValue)
-					property.Type = &typ
-				}
-			} else {
-				property.AllOf = nil
-				property.Properties = unwrappedProperties
-				typ := Type(PropertyTypeObject)
+			if defaultValue != nil {
+				property.Default = defaultValue
+				typ := defaultValuePropertyType(defaultValue)
 				property.Type = &typ
 			}
+		} else {
+			property.AllOf = nil
+			property.Properties = unwrappedProperties
+			typ := Type(PropertyTypeObject)
+			property.Type = &typ
 		}
 	}
 
