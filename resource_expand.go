@@ -280,7 +280,7 @@ func (r *Resource) UnwrapAllOfProperties(property *Property) error {
 	if len(property.Properties) == 0 && len(property.PatternProperties) == 0 && len(property.AllOf) > 0 {
 		for _, propertySubschema := range property.AllOf {
 
-			if propertySubschema.Ref != "" && propertySubschema.Default != nil {
+			if propertySubschema.Ref != "" || propertySubschema.Default != nil {
 				ref := Reference(propertySubschema.Ref)
 				defaultValue := propertySubschema.Default
 
