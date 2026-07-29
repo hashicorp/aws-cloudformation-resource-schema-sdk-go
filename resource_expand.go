@@ -278,27 +278,40 @@ func (r *Resource) UnwrapAllOfProperties(property *Property) error {
 	*/
 
 	if len(property.Properties) == 0 && len(property.PatternProperties) == 0 && len(property.AllOf) > 0 {
+		var ref Reference
+		var defaultValue any
+		unwrappedProperties := make(map[string]*Property)
 		for _, propertySubschema := range property.AllOf {
 
-			if propertySubschema.Ref != "" || propertySubschema.Default != nil {
-				ref := Reference(propertySubschema.Ref)
-				defaultValue := propertySubschema.Default
-
-				property.AllOf = nil
-				property.Ref = &ref
-				property.Default = defaultValue
-				typ := Type(PropertyTypeString)
-				property.Type = &typ
-
-				return nil
+			if propertySubschema.Ref != "" {
+				ref = Reference(propertySubschema.Ref)
 			}
 
-			unwrappedProperties := make(map[string]*Property)
+			if propertySubschema.Default != nil {
+				defaultValue = propertySubschema.Default
+			}
+
+			//
 			maps.Copy(unwrappedProperties, propertySubschema.Properties)
-			property.AllOf = nil
-			property.Properties = unwrappedProperties
-			typ := Type(PropertyTypeObject)
-			property.Type = &typ
+
+			if ref.String() != "" {
+				property.AllOf = nil
+				property.Ref = &ref
+
+				if defaultValue != nil {
+					property.Default = defaultValue
+					switch defaultValue.(type) {
+					case string:
+						typ := Type(PropertyTypeString)
+						property.Type = &typ
+					}
+				}
+			} else {
+				property.AllOf = nil
+				property.Properties = unwrappedProperties
+				typ := Type(PropertyTypeObject)
+				property.Type = &typ
+			}
 		}
 	}
 

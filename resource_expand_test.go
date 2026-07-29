@@ -344,7 +344,6 @@ func TestResourceExpand_SecondLevelNestedDefinition(t *testing.T) {
 						properties = property.Items.Properties
 					case cfschema.PropertyTypeObject:
 						properties = property.Properties
-						t.Log(property.Properties)
 					default:
 						t.Fatalf("resource property (%s) type (%s)", propertyName, typ)
 					}
