@@ -9,4 +9,6 @@ type PropertySubschema struct {
 	OneOf      []*PropertySubschema `json:"oneOf,omitempty"`
 	Properties map[string]*Property `json:"properties,omitempty"`
 	Required   []string             `json:"required,omitempty"`
+	Ref        string               `json:"$ref,omitempty"`
+	Default    any                  `json:"default,omitempty"`
 }

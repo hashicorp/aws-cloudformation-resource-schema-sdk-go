@@ -45,7 +45,7 @@ const (
 // Property represents the CloudFormation Resource Schema customization for Definitions and Properties.
 type Property struct {
 	AdditionalProperties *bool                    `json:"additionalProperties,omitempty"`
-	AllOf                []any                    `json:"allOf,omitempty"`
+	AllOf                []*PropertySubschema     `json:"allOf,omitempty"`
 	AnyOf                []*PropertySubschema     `json:"anyOf,omitempty"`
 	ArrayType            *string                  `json:"arrayType,omitempty"`
 	Comment              *string                  `json:"$comment,omitempty"`

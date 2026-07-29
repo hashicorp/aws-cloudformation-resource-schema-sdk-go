@@ -5,6 +5,7 @@ package cfschema
 
 import (
 	"fmt"
+	"maps"
 )
 
 // Expand replaces all Definition and Property JSON Pointer references with their content.
@@ -277,24 +278,11 @@ func (r *Resource) UnwrapAllOfProperties(property *Property) error {
 	*/
 
 	if len(property.Properties) == 0 && len(property.PatternProperties) == 0 && len(property.AllOf) > 0 {
-		//unwrappedProperties := make(map[string]*Property)
-		var ref Reference
-		var defaultValue any
 		for _, propertySubschema := range property.AllOf {
 
-			//for propertyName, property := range propertySubschema.Properties {
-			//	unwrappedProperties[propertyName] = property
-			//}
-			switch t := propertySubschema.(type) {
-			case map[string]any:
-				for key, value := range t {
-					if key == "$ref" {
-						ref = Reference(value.(string))
-					}
-					if key == "default" {
-						defaultValue = value
-					}
-				}
+			if propertySubschema.Ref != "" && propertySubschema.Default != nil {
+				ref := Reference(propertySubschema.Ref)
+				defaultValue := propertySubschema.Default
 
 				property.AllOf = nil
 				property.Ref = &ref
@@ -303,20 +291,15 @@ func (r *Resource) UnwrapAllOfProperties(property *Property) error {
 				property.Type = &typ
 
 				return nil
-			case *PropertySubschema:
-				for propertyName, property := range t.Properties {
-					property.Properties[propertyName] = property
-				}
-
-				property.AllOf = nil
-				property.Properties = t.Properties
-				typ := Type(PropertyTypeObject)
-				property.Type = &typ
-
-				return nil
 			}
-		}
 
+			unwrappedProperties := make(map[string]*Property)
+			maps.Copy(unwrappedProperties, propertySubschema.Properties)
+			property.AllOf = nil
+			property.Properties = unwrappedProperties
+			typ := Type(PropertyTypeObject)
+			property.Type = &typ
+		}
 	}
 
 	return nil
