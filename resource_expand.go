@@ -291,7 +291,7 @@ func (r *Resource) UnwrapAllOfProperties(property *Property) error {
 				defaultValue = propertySubschema.Default
 			}
 
-			//
+			// write properties if they exist
 			maps.Copy(unwrappedProperties, propertySubschema.Properties)
 
 			if ref.String() != "" {
@@ -300,11 +300,8 @@ func (r *Resource) UnwrapAllOfProperties(property *Property) error {
 
 				if defaultValue != nil {
 					property.Default = defaultValue
-					switch defaultValue.(type) {
-					case string:
-						typ := Type(PropertyTypeString)
-						property.Type = &typ
-					}
+					typ := defaultValuePropertyType(defaultValue)
+					property.Type = &typ
 				}
 			} else {
 				property.AllOf = nil
@@ -316,4 +313,23 @@ func (r *Resource) UnwrapAllOfProperties(property *Property) error {
 	}
 
 	return nil
+}
+
+func defaultValuePropertyType(defaultValue any) Type {
+	switch defaultValue.(type) {
+	case string:
+		return PropertyTypeString
+	case bool:
+		return PropertyTypeBoolean
+	case float64:
+		return PropertyTypeNumber
+	case int:
+		return PropertyTypeInteger
+	case []any:
+		return PropertyTypeArray
+	case map[string]any:
+		return PropertyTypeObject
+	default:
+		return PropertyTypeNull
+	}
 }
