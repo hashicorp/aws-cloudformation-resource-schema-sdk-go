@@ -98,6 +98,12 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 				return fmt.Errorf("unwrapping %s OneOf Properties: %w", propertyName, err)
 			}
 
+			err = r.UnwrapAllOfProperties(property)
+
+			if err != nil {
+				return fmt.Errorf("unwrapping %s AllOf Properties: %w", propertyName, err)
+			}
+
 			// For example:
 			//
 			// "ClusterConfiguration": {
@@ -185,6 +191,12 @@ func (r *Resource) ResolveProperty(property *Property) (bool, error) {
 			return false, err
 		}
 
+		err = r.UnwrapAllOfProperties(resolution)
+
+		if err != nil {
+			return false, err
+		}
+
 		*property = *resolution
 
 		// Ensure that any default value is not lost.
@@ -236,6 +248,75 @@ func (r *Resource) UnwrapOneOfProperties(property *Property) error {
 		property.Properties = unwrappedProperties
 		typ := Type(PropertyTypeObject)
 		property.Type = &typ
+	}
+
+	return nil
+}
+
+func (r *Resource) UnwrapAllOfProperties(property *Property) error {
+	/*
+	   "PublicNetworkConfiguration": {
+	     "type": "object",
+	     "properties": {
+	       "IpType": {
+	         "allOf": [
+	           {
+	             "$ref": "#/definitions/IpType"
+	           },
+	           {
+	             "default": "IPV4"
+	           }
+	         ]
+	       }
+	     },
+	     "required": [
+	       "IpType"
+	     ],
+	     "additionalProperties": false
+	   },
+	*/
+
+	if len(property.Properties) == 0 && len(property.PatternProperties) == 0 && len(property.AllOf) > 0 {
+		//unwrappedProperties := make(map[string]*Property)
+		var ref Reference
+		var defaultValue any
+		for _, propertySubschema := range property.AllOf {
+
+			//for propertyName, property := range propertySubschema.Properties {
+			//	unwrappedProperties[propertyName] = property
+			//}
+			switch t := propertySubschema.(type) {
+			case map[string]any:
+				for key, value := range t {
+					if key == "$ref" {
+						ref = Reference(value.(string))
+					}
+					if key == "default" {
+						defaultValue = value
+					}
+				}
+
+				property.AllOf = nil
+				property.Ref = &ref
+				property.Default = defaultValue
+				typ := Type(PropertyTypeString)
+				property.Type = &typ
+
+				return nil
+			case *PropertySubschema:
+				for propertyName, property := range t.Properties {
+					property.Properties[propertyName] = property
+				}
+
+				property.AllOf = nil
+				property.Properties = t.Properties
+				typ := Type(PropertyTypeObject)
+				property.Type = &typ
+
+				return nil
+			}
+		}
+
 	}
 
 	return nil

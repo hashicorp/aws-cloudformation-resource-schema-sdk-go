@@ -45,14 +45,14 @@ const (
 // Property represents the CloudFormation Resource Schema customization for Definitions and Properties.
 type Property struct {
 	AdditionalProperties *bool                    `json:"additionalProperties,omitempty"`
-	AllOf                []*PropertySubschema     `json:"allOf,omitempty"`
+	AllOf                []any                    `json:"allOf,omitempty"`
 	AnyOf                []*PropertySubschema     `json:"anyOf,omitempty"`
 	ArrayType            *string                  `json:"arrayType,omitempty"`
 	Comment              *string                  `json:"$comment,omitempty"`
-	Default              interface{}              `json:"default,omitempty"`
+	Default              any                      `json:"default,omitempty"`
 	Description          *string                  `json:"description,omitempty"`
-	Enum                 []interface{}            `json:"enum,omitempty"`
-	Examples             []interface{}            `json:"examples,omitempty"`
+	Enum                 []any                    `json:"enum,omitempty"`
+	Examples             []any                    `json:"examples,omitempty"`
 	Format               *string                  `json:"format,omitempty"`
 	InsertionOrder       *bool                    `json:"insertionOrder,omitempty"`
 	Items                *Property                `json:"items,omitempty"`
