@@ -1,3 +1,7 @@
+## v0.24.0 (July 30, 2026)
+
+Resolve refs during resource expansion when the referenced definition is included in `allOf` properties.
+
 ## v0.23.0 (May 21, 2024)
 
 Resolve patternProperty refs during resource expansion when the referenced definition has no type.
