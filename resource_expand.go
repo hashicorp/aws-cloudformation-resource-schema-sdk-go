@@ -5,6 +5,7 @@ package cfschema
 
 import (
 	"fmt"
+	"maps"
 )
 
 // Expand replaces all Definition and Property JSON Pointer references with their content.
@@ -98,6 +99,12 @@ func (r *Resource) ResolveProperties(properties map[string]*Property) error {
 				return fmt.Errorf("unwrapping %s OneOf Properties: %w", propertyName, err)
 			}
 
+			err = r.UnwrapAllOfProperties(property)
+
+			if err != nil {
+				return fmt.Errorf("unwrapping %s AllOf Properties: %w", propertyName, err)
+			}
+
 			// For example:
 			//
 			// "ClusterConfiguration": {
@@ -185,6 +192,12 @@ func (r *Resource) ResolveProperty(property *Property) (bool, error) {
 			return false, err
 		}
 
+		err = r.UnwrapAllOfProperties(resolution)
+
+		if err != nil {
+			return false, err
+		}
+
 		*property = *resolution
 
 		// Ensure that any default value is not lost.
@@ -239,4 +252,84 @@ func (r *Resource) UnwrapOneOfProperties(property *Property) error {
 	}
 
 	return nil
+}
+
+func (r *Resource) UnwrapAllOfProperties(property *Property) error {
+	/*
+	   "PublicNetworkConfiguration": {
+	     "type": "object",
+	     "properties": {
+	       "IpType": {
+	         "allOf": [
+	           {
+	             "$ref": "#/definitions/IpType"
+	           },
+	           {
+	             "default": "IPV4"
+	           }
+	         ]
+	       }
+	     },
+	     "required": [
+	       "IpType"
+	     ],
+	     "additionalProperties": false
+	   },
+	*/
+
+	if len(property.Properties) == 0 && len(property.PatternProperties) == 0 && len(property.AllOf) > 0 {
+		var ref Reference
+		var defaultValue any
+		unwrappedProperties := make(map[string]*Property)
+		for _, propertySubschema := range property.AllOf {
+
+			if propertySubschema.Ref != "" {
+				ref = Reference(propertySubschema.Ref)
+			}
+
+			if propertySubschema.Default != nil {
+				defaultValue = propertySubschema.Default
+			}
+
+			// write properties if they exist
+			maps.Copy(unwrappedProperties, propertySubschema.Properties)
+		}
+
+		if ref.String() != "" {
+			property.AllOf = nil
+			property.Ref = &ref
+
+			if defaultValue != nil {
+				property.Default = defaultValue
+				typ := defaultValuePropertyType(defaultValue)
+				property.Type = &typ
+			}
+		} else {
+			property.AllOf = nil
+			property.Properties = unwrappedProperties
+			typ := Type(PropertyTypeObject)
+			property.Type = &typ
+		}
+	}
+
+	return nil
+}
+
+func defaultValuePropertyType(defaultValue any) Type {
+	switch defaultValue.(type) {
+	case string:
+		return PropertyTypeString
+	case bool:
+		return PropertyTypeBoolean
+	case float64:
+		return PropertyTypeNumber
+	case int:
+		return PropertyTypeInteger
+	case []any:
+		return PropertyTypeArray
+	case map[string]any:
+		return PropertyTypeObject
+	default:
+		return PropertyTypeNull
+	}
 }

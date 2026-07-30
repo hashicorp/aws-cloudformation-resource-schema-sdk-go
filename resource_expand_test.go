@@ -277,6 +277,13 @@ func TestResourceExpand_SecondLevelNestedDefinition(t *testing.T) {
 			ExpectedPropertyType: cfschema.PropertyTypeString,
 		},
 		{
+			TestDescription:      "unwrap allOf type object, single entry with ref",
+			MetaSchemaPath:       "provider.definition.schema.v1.json",
+			ResourceSchemaPath:   "AWS_SES_MailManagerIngressPoint.json",
+			PropertyPath:         []string{"NetworkConfiguration", "PublicNetworkConfiguration", "IpType"},
+			ExpectedPropertyType: cfschema.PropertyTypeString,
+		},
+		{
 			TestDescription:      "unwrap oneOf type empty, single entry with refs",
 			MetaSchemaPath:       "provider.definition.schema.v1.json",
 			ResourceSchemaPath:   "AWS_S3Outposts_Bucket.json",
